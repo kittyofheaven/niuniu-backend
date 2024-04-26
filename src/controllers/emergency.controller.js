@@ -1,3 +1,6 @@
+//  emergency.controller.js
+//  Created by Hazel Handrata on 25/04/24.
+
 const { errorHandler, FieldEmptyError } = require("../middleware/error.middleware");
 const SuccessResponse = require('../middleware/success.middleware')
 

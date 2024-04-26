@@ -1,3 +1,6 @@
+//  index.js
+//  Created by Hazel Handrata on 25/04/24.
+
 const dotenv = require("dotenv");
 const cors = require('cors');
 
