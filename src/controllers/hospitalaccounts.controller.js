@@ -1,5 +1,5 @@
 const { UnknownError, CustomError, FieldEmptyError, UserNotFoundError, errorHandler, UnauthorizedError } = require('../middleware/error.middleware');
-const hospitalAccountsServices = require('../services/hospitalaccounts.services');
+const hospitalAccountsServices = require('../services/hospitalaccounts.service');
 
 const createHospitalAccount = async (req, res) => {
     const { email, phone_number, hospital_name, password, location } = req.body;

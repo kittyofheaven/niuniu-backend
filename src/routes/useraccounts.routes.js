@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const {createUserAccount, validateUserAccount} = require('../controllers/useraccounts.controllers');
+const {createUserAccount, validateUserAccount} = require('../controllers/useraccounts.controller');
 
 router.post('/register', createUserAccount);
 router.post('/login', validateUserAccount);

@@ -1,5 +1,5 @@
 const { UnknownError, CustomError, FieldEmptyError, UserNotFoundError, errorHandler, UnauthorizedError } = require('../middleware/error.middleware');
-const accountServices = require('../services/useraccounts.services');
+const accountServices = require('../services/useraccounts.service');
 
 const createUserAccount = async (req, res) => {
     const { email, phone_number, first_name, last_name, password } = req.body;

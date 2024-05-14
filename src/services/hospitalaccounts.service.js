@@ -62,7 +62,7 @@ const validateHospitalAccount = async (email, password, res) => {
             throw new CustomError("Invalid password", 401);
         }
 
-        const token = jwt.sign({id: hospital.id}, process.env.SECRET_JWT_TOKEN, {expiresIn: '365d'});
+        const token = jwt.sign({id: hospital.id}, process.env.SECRET_JWT_TOKEN_HOSPITAL, {expiresIn: '365d'});
         const success = new SuccessResponse("Login successful", {
             "hospital_id": hospital.id,
             "email": hospital.email,

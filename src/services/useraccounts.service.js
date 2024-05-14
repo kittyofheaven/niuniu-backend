@@ -64,7 +64,7 @@ const validateUserAccount = async (email, password, res) => {
             throw new CustomError("Invalid password", 401);
         }
 
-        const token = jwt.sign({id: user.id}, process.env.SECRET_JWT_TOKEN, {expiresIn: '365d'});
+        const token = jwt.sign({id: user.id}, process.env.SECRET_JWT_TOKEN_USER, {expiresIn: '365d'});
         const success = new SuccessResponse("User account validated successfully", {
             "user_id": user.id,
             "email": user.email,
