@@ -27,7 +27,7 @@ const createUserAccount = async (email, phone_number, first_name, last_name, pas
         
         // email, phone_number, first_name, last_name, hashedPassword
         const created = await createUserAccountDB(email, phone_number, first_name, last_name, hashedPassword);
-        console.log(created)
+
         // SEND EMAIL VERIFICATION DISINI
         
         const success = new SuccessResponse("User account created successfully", {
