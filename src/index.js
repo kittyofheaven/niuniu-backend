@@ -62,6 +62,9 @@ app.get(`/${prefix}`, (req, res) => {
 const emergencyRoutes = require('./routes/emergency.routes');
 app.use(`/${prefix}/emergency`, emergencyRoutes);
 
+const userAccountsRoutes = require('./routes/useraccounts.routes');
+app.use(`/${prefix}/useraccounts`, userAccountsRoutes);
+
 // PORT
 const port = process.env.PORT || 4000
 server.listen(port, () => {

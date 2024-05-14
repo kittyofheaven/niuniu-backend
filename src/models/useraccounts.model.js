@@ -27,7 +27,8 @@ module.exports = (sequelize, DataTypes) => {
     phone_number: DataTypes.STRING,
     first_name: DataTypes.STRING,
     last_name: DataTypes.STRING,
-    password: DataTypes.STRING
+    password: DataTypes.STRING,
+    is_verified: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'UserAccounts',
