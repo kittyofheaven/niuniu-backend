@@ -71,6 +71,9 @@ app.use(`/${prefix}/hospitalaccounts`, hospitalAccountsRoutes);
 const driverAccountsRoutes = require('./routes/driveraccounts.routes');
 app.use(`/${prefix}/driveraccounts`, driverAccountsRoutes);
 
+const adminAccountsRoutes = require('./routes/adminaccounts.routes');
+app.use(`/${prefix}/niuniu/administrator`, adminAccountsRoutes);
+
 // PORT
 const port = process.env.PORT || 4000
 server.listen(port, () => {
