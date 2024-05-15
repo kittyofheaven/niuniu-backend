@@ -6,6 +6,7 @@ const SuccessResponse = require('../middleware/success.middleware')
 
 const postEmergencyController = async (req, res) => {
     try {
+        // console.log(req.userAccount.first_name);
         const { name, phone, location, emergencyType } = req.body;
 
         if (!name || !phone || !location || !emergencyType) {
