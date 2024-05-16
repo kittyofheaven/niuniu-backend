@@ -59,7 +59,7 @@ app.get(`/${prefix}`, (req, res) => {
     })
 })
 
-const emergencyRoutes = require('./routes/emergency.routes');
+const emergencyRoutes = require('./routes/emergencyevents.routes');
 app.use(`/${prefix}/emergency`, emergencyRoutes);
 
 const userAccountsRoutes = require('./routes/useraccounts.routes');

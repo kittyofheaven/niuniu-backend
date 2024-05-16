@@ -39,7 +39,8 @@ module.exports = (sequelize, DataTypes) => {
     number_of_patient: DataTypes.INTEGER,
     title: DataTypes.STRING,
     descriptions: DataTypes.STRING,
-    is_done: DataTypes.BOOLEAN
+    is_done: DataTypes.BOOLEAN,
+    is_canceled: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'EmergencyEvents',

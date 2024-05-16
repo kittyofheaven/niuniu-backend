@@ -32,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
     first_name: DataTypes.STRING,
     last_name: DataTypes.STRING,
     password: DataTypes.STRING,
-    hospital_id: DataTypes.INTEGER
+    hospital_id: DataTypes.INTEGER,
+    is_occupied: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'DriverAccounts',

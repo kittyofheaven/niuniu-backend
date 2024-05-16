@@ -37,6 +37,10 @@ module.exports = {
           key: 'id'
         }
       },
+      is_occupied: {
+        defaultValue: false,
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
