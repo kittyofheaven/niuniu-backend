@@ -11,6 +11,19 @@ const createHospitalAccountDB = async (email, phone_number, hospital_name, hashe
     });
 }
 
+const findHospitalAccountByIdDB = async (id) => {
+    try{
+        return await hospitalAccounts.findOne({
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 const findHospitalAccountByEmailDB = async (email) => {
     try{
         return await hospitalAccounts.findOne({
@@ -50,13 +63,23 @@ const resetPasswordHospitalAccountDB = async (email, newHashedPassword) => {
     catch (error){
         console.log(error);
     }
-    
+}
+
+const getAllHospitalAccountsDB = async () => {
+    try{
+        return await hospitalAccounts.findAll();
+    }
+    catch (error){
+        console.log(error);
+    }
 }
 
 module.exports = {
     createHospitalAccountDB,
+    findHospitalAccountByIdDB,
     findHospitalAccountByEmailDB,
     findHospitalAccountByNameDB,
-    resetPasswordHospitalAccountDB
+    resetPasswordHospitalAccountDB,
+    getAllHospitalAccountsDB
 }
 
