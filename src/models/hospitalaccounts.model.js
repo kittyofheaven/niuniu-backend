@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'hospital_id',
         as: 'hospital_emergencyEvents'
       });
+      HospitalAccounts.belongsTo(models.Kota, {
+        foreignKey: 'kota_id',
+        as: 'kota_hospitalAccounts'
+      });
     }
   }
   HospitalAccounts.init({
@@ -31,7 +35,9 @@ module.exports = (sequelize, DataTypes) => {
     phone_number: DataTypes.STRING,
     hospital_name: DataTypes.STRING,
     password: DataTypes.STRING,
-    location: DataTypes.GEOMETRY('POINT')
+    kelas: DataTypes.ENUM('A', 'B', 'C', 'D', 'E'),
+    location: DataTypes.GEOMETRY('POINT'),
+    kota_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'HospitalAccounts',

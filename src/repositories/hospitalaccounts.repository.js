@@ -74,12 +74,26 @@ const getAllHospitalAccountsDB = async () => {
     }
 }
 
+const getAllHospitalAccountsByKotaDB = async (kota_id) => {
+    try{
+        return await hospitalAccounts.findAll({
+            where: {
+                kota_id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 module.exports = {
     createHospitalAccountDB,
     findHospitalAccountByIdDB,
     findHospitalAccountByEmailDB,
     findHospitalAccountByNameDB,
     resetPasswordHospitalAccountDB,
-    getAllHospitalAccountsDB
+    getAllHospitalAccountsDB,
+    getAllHospitalAccountsByKotaDB
 }
 

@@ -9,6 +9,7 @@ const distanceBetweenTwoPoints = (point1, point2) => {
     return distance;
 }
 
+
 module.exports = {
     distanceBetweenTwoPoints
 }

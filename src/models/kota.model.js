@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'provinsi_id',
         as: 'provinsi_kota'
       });
+      Kota.hasMany(models.HospitalAccounts, {
+        foreignKey: 'kota_id',
+        as: 'kota_hospitalAccounts'
+      });
     }
   }
   Kota.init({

@@ -25,9 +25,21 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      kelas: {
+        allowNull: false,
+        type: Sequelize.ENUM('A', 'B', 'C', 'D', 'E')
+      },
       location: {
         allowNull: false,
         type: Sequelize.GEOMETRY('POINT')
+      },
+      kota_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Kota',
+          key: 'id'
+        }
       },
       createdAt: {
         allowNull: false,

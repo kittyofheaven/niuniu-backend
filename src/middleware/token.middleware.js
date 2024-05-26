@@ -11,6 +11,7 @@ const verifyUserToken = (req, res, next) => {
     if (!token)
         errorHandler(new CustomError('User Token Not Provided', 400), res);
     else
+        console.log(token)
         jwt.verify(token, process.env.SECRET_JWT_TOKEN_USER, async (err, decoded) => {
             if (err) {
                 return errorHandler(new UnauthorizedError(err.message), res)

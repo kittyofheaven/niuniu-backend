@@ -18,25 +18,9 @@ dotenv.config();
 
 // socket.io config
 const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
-});
+const { initializeSocket } = require('./sockets');
 
-io.on('connection', (socket) => {
-    console.log(`User Connected ${socket.id}`);
-
-    socket.on('join-chat', (room)=> {
-        socket.join(room);
-        console.log(`User ${socket.id} joined room ${room}`);
-    })
-
-    socket.on("disconnect", () => {
-        console.log("User Disconnected", socket.id);
-    });
-});
+initializeSocket(server);
 
 /**
  * * Parse request of content-type: application/json
