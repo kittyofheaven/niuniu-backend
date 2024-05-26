@@ -163,6 +163,36 @@ const findEmergencyEventByHospitalDBIsNotDone = async (hospital_id) => {
     }
 }
 
+const updateHospitalIdEmergencyEventDB = async (id, hospital_id) => {
+    try{
+        return await emergencyEvents.update({
+            hospital_id
+        }, {
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+const updateDriverIdEmergencyEventDB = async (id, driver_id) => {
+    try{
+        return await emergencyEvents.update({
+            driver_id
+        }, {
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 const updateDoneEmergencyEventDB = async (id) => {
     try{
         return await emergencyEvents.update({
@@ -190,5 +220,7 @@ module.exports = {
     findEmergencyEventByHospitalDB,
     findEmergencyEventByHospitalDBIsDone,
     findEmergencyEventByHospitalDBIsNotDone,
+    updateHospitalIdEmergencyEventDB,
+    updateDriverIdEmergencyEventDB,
     updateDoneEmergencyEventDB
 }

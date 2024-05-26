@@ -115,7 +115,7 @@ async function findNearestHospital(userLocation) {
     }
 }
 
-const createEmergencyEvent = async (user_id, user_location, driver_id, emergency_type, number_of_patient, title, descriptions, res) => {
+const createEmergencyEvent = async (user_id, user_location, emergency_type, number_of_patient, title, descriptions, res) => {
 
     const io = getIo();
     if (!io) {
@@ -124,33 +124,16 @@ const createEmergencyEvent = async (user_id, user_location, driver_id, emergency
     }
 
     try{
-        if (!user_id || !user_location || !driver_id || !emergency_type){
+        if (!user_id || !user_location || !emergency_type){
             throw new FieldEmptyError("All fields are required");
         }
 
         let is_done = false;
+        
+        driver_id = null;
+        hospital_id = null;
 
-        //LOGIKA PENENTUAN HOSPITAL ID DAN DRIVER ID.
-
-        // console.log(user_location.coordinates); //[longitude, latitude]
-        // cari 2 provinsi terdekat terus 2 kota terdekat baru 1 rumah sakit terdekat
-
-        // search for nearest hospital
-
-        const nearestHospital = await findNearestHospital(user_location);
-        console.log(nearestHospital.id);
-
-        io.to(`hospital${nearestHospital.id}`).emit("emergency", {
-            "user_id": user_id,
-            "user_location": user_location,
-            "driver_id": driver_id,
-            "emergency_type": emergency_type,
-            "number_of_patient": number_of_patient,
-            "title": title,
-            "descriptions": descriptions
-        })
-
-        const created = await createEmergencyEventDB(user_id, user_location, driver_id, nearestHospital.id, emergency_type, number_of_patient, title, descriptions, is_done);
+        const created = await createEmergencyEventDB(user_id, user_location, driver_id, hospital_id, emergency_type, number_of_patient, title, descriptions, is_done);
         
         if(created.title == null){
             created.title = "No provided title";
@@ -160,18 +143,50 @@ const createEmergencyEvent = async (user_id, user_location, driver_id, emergency
             created.descriptions = "No provided descriptions";
         }
 
-        const success = new SuccessResponse("Emergency event created successfully", {
+        //LOGIKA PENENTUAN HOSPITAL ID DAN DRIVER ID.
+
+        // console.log(user_location.coordinates); //[longitude, latitude]
+        // cari 2 provinsi terdekat terus 2 kota terdekat baru 1 rumah sakit terdekat
+
+        // search for nearest hospital
+        const nearestHospital = await findNearestHospital(user_location);
+        console.log(nearestHospital.id);
+
+        io.to(`hospital${nearestHospital.id}`).emit("emergency", {
             "emergency_event_id": created.id,
-            "user_id": created.user_id,
-            "user_location": created.user_location,
-            "driver_id": created.driver_id,
-            "hospital_id": created.hospital_id,
-            "emergency_type": created.emergency_type,
-            "number_of_patient": created.number_of_patient,
+            "user_id": user_id,
+            "user_location": user_location,
+            "emergency_type": emergency_type,
+            "number_of_patient": number_of_patient,
+            "title": title,
+            "descriptions": descriptions
+        })
+
+        const success = new SuccessResponse("Emergency event acknowledge", {
+            "emergency_event_id": created.id,
+            "user_id": user_id,
+            "user_location": user_location,
+            "emergency_type": emergency_type,
+            "number_of_patient": number_of_patient,
             "title": created.title,
             "descriptions": created.descriptions,
-            "is_done": created.is_done
+            "is_done": is_done,
+            "message": "Emergency event acknowledge by server. Please wait for hospital & driver to accept the emergency event. we will notify you when the event is accepted by hospital & driver from websocket.",
+            "socket_event": "emergency"
         });
+
+        // const success = new SuccessResponse("Emergency event created successfully", {
+        //     "emergency_event_id": created.id,
+        //     "user_id": created.user_id,
+        //     "user_location": created.user_location,
+        //     "driver_id": created.driver_id,
+        //     "hospital_id": created.hospital_id,
+        //     "emergency_type": created.emergency_type,
+        //     "number_of_patient": created.number_of_patient,
+        //     "title": created.title,
+        //     "descriptions": created.descriptions,
+        //     "is_done": created.is_done
+        // });
 
         success.send201(res);
     } catch (error){

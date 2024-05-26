@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.GEOMETRY('POINT')
       },
       driver_id: {
-        allowNull: false,
+        defaultValue: null,
         type: Sequelize.INTEGER,
         references: {
           model: 'DriverAccounts',
@@ -30,7 +30,7 @@ module.exports = {
         }
       },
       hospital_id: {
-        allowNull: false,
+        defaultValue: null,
         type: Sequelize.INTEGER,
         references: {
           model: 'HospitalAccounts',
