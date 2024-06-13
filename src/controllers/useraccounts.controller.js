@@ -10,6 +10,30 @@ const createUserAccount = async (req, res) => {
     }
 };
 
+const verifyUserAccountOTP = async (req, res) => {
+    try{
+        const { phone_number, code } = req.body;
+        if (!phone_number || !code){
+            throw new FieldEmptyError('Phone number or code is empty');
+        }
+        await accountServices.verifyUserAccountOTP(phone_number, code, res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
+const resendUserAccountOTP = async (req, res) => {
+    try{
+        const { phone_number } = req.body;
+        if (!phone_number){
+            throw new FieldEmptyError('Phone number is empty');
+        }
+        await accountServices.resendUserAccountOTP(phone_number, res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
 const validateUserAccount = async (req, res) => {
     try{
         const { email, password } = req.body;
@@ -24,5 +48,7 @@ const validateUserAccount = async (req, res) => {
 
 module.exports = {
     createUserAccount,
+    verifyUserAccountOTP,
+    resendUserAccountOTP,
     validateUserAccount
 }

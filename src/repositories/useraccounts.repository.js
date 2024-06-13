@@ -40,6 +40,19 @@ const resetPasswordUserAccountDB = async (email, newHashedPassword) => {
     
 }
 
+const findUserAccountByPhoneNumberDB = async (phone_number) => {
+    try{
+        return await userAccounts.findOne({
+            where: {
+                phone_number
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 const verifyUserAccountDB = async (email) => {
     try{
         return await userAccounts.update({
@@ -58,5 +71,7 @@ const verifyUserAccountDB = async (email) => {
 module.exports = {
     createUserAccountDB,
     findUserAccountByEmailDB,
-    resetPasswordUserAccountDB
+    findUserAccountByPhoneNumberDB,
+    resetPasswordUserAccountDB,
+    verifyUserAccountDB
 }

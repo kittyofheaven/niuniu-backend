@@ -134,6 +134,18 @@ const initializeSocket = (server) => {
                         descriptions: emergencyEvent.descriptions,
                         message: "You're chosen. Please proceed to the location.",
                     });
+                    io.to(`user${emergencyEvent.user_id}`).emit('emergency', {
+                        status: 'success',
+                        emergency_event_id: emergencyEventId,
+                        user_id: emergencyEvent.user_id,
+                        user_location: emergencyEvent.user_location,
+                        driver_id: driverId,
+                        emergency_type: emergencyEvent.emergency_type,
+                        number_of_patient: emergencyEvent.number_of_patient,
+                        title: emergencyEvent.title,
+                        descriptions: emergencyEvent.descriptions,
+                        message: "You're chosen. Please proceed to the location.",
+                    });
 
                 } else if (accepted == false) {
                     console.log(`Emergency event rejected by ${role}${user_id}`);
@@ -145,7 +157,11 @@ const initializeSocket = (server) => {
                     // update emergency event hospital_id to null
                     await updateHospitalIdEmergencyEventDB(emergencyEventId, null);
                     await updateDriverIdEmergencyEventDB(emergencyEventId, null);
+
+                    // PENTING
                     // Implement logic to contact another hospital
+                    // PENTING
+
                 }
             } catch (error) {
                 console.error('Error handling emergency event:', error);
@@ -155,6 +171,117 @@ const initializeSocket = (server) => {
                 });
             }
         });
+        // HOSPITAL SOCKET EVENT END
+
+        // TRACKING
+        socket.on("tracking", async (data)=> {
+            const user_id = socket.user.id;
+            const role = socket.handshake.auth.role;
+            console.log(`Tracking event received from ${socket.id} with ${user_id} id and ${role}:`, data);
+
+            // {
+            //     ext auth token ...
+            //     emergency_event_id: 1,
+            //     driver_location: {
+            //          "type": "Point",
+            //          "coordinates": [
+            //              112.79492800618364,
+            //              -7.282360773173656
+            //         ]
+            //      }
+            // }
+
+            // {
+            //     ext user auth token ...
+            //     emergency_event_id: 1,
+            //     user_location: {
+            //          "type": "Point",
+            //          "coordinates": [
+            //              112.79492800618364,
+            //              -7.282360773173656
+            //         ]
+            //      }
+            // }
+
+            try{
+                const emergencyEventId = data.emergency_event_id;
+                if (emergencyEventId == undefined) {
+                    console.log(`Emergency event ID not provided by ${role}${user_id}`);
+                    io.to(`${role}${user_id}`).emit('emergency', {
+                        status: 'error',
+                        message: 'Emergency event ID not provided'
+                    });
+                    return;
+                }
+
+                const emergencyEvent = await findEmergencyEventByIdDB(emergencyEventId);
+                if (!emergencyEvent) {
+                    console.log(`Emergency event not found with ID ${emergencyEventId}`);
+                    io.to(`${role}${user_id}`).emit('emergency', {
+                        status: 'error',
+                        message: 'Emergency event not found'
+                    });
+                    return;
+                }
+
+                if(role == "driver"){
+                    const driver_location = data.driver_location;
+
+                    io.to(`hospital${emergencyEvent.hospital_id}`).emit('tracking', {
+                        status: 'success',
+                        emergency_event_id: emergencyEventId,
+                        driver_id: user_id,
+                        location: driver_location,
+                        message: 'Driver location updated successfully'
+                    });
+                    io.to(`user${emergencyEvent.hospital_id}`).emit('tracking', {
+                        status: 'success',
+                        emergency_event_id: emergencyEventId,
+                        driver_id: user_id,
+                        location: driver_location,
+                        message: 'Driver location updated successfully'
+                    });
+                }
+
+                if(role == "user"){
+                    const user_location = data.user_location;
+
+                    io.to(`driver${emergencyEvent.driver_id}`).emit('tracking', {
+                        status: 'success',
+                        emergency_event_id: emergencyEventId,
+                        user_id: user_id,
+                        location: user_location,
+                        message: 'User location updated successfully'
+                    });
+                    io.to(`hospital${emergencyEvent.hospital_id}`).emit('tracking', {
+                        status: 'success',
+                        emergency_event_id: emergencyEventId,
+                        user_id: user_id,
+                        location: user_location,
+                        message: 'User location updated successfully'
+                    });
+                }
+
+            }
+            catch(error){
+                console.error('Error handling tracking event:', error);
+                io.to(`${role}${user_id}`).emit('tracking', {
+                    status: 'error',
+                    message: 'An error occurred while processing the emergency event'
+                });
+            }
+        })
+        // TRACKING END
+
+        // SOCKET STATUS
+        // if user is online or offline check each minutes
+        // ubah didatabase status user
+        socket.on("status", (data) => {
+            const user_id = socket.user.id;
+            const role = socket.handshake.auth.role;
+
+        })
+        // SOCKET STATUS END
 
         socket.on("disconnect", () => {
             console.log("User Disconnected", socket.id);

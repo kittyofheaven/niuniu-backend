@@ -1,8 +1,10 @@
-const { createUserAccountDB, findUserAccountByEmailDB, resetPasswordUserAccountDB } = require ('../repositories/useraccounts.repository')
+const { createUserAccountDB, findUserAccountByEmailDB, findUserAccountByPhoneNumberDB, resetPasswordUserAccountDB, verifyUserAccountDB } = require ('../repositories/useraccounts.repository')
 const SuccessResponse = require('../middleware/success.middleware')
 const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/error.middleware");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {sendOTP, verifyOTP} = require('../helpers/sms.helper');
+const { deleteAllUserOtpDB } = require('../repositories/userotp.repository');
 
 const createUserAccount = async (email, phone_number, first_name, last_name, password, res) => {
     try{
@@ -18,9 +20,18 @@ const createUserAccount = async (email, phone_number, first_name, last_name, pas
             throw new CustomError("Password must be at least 8 characters", 400);
         }
         
+        // email cant be double
         if (await findUserAccountByEmailDB(email)){
-            throw new CustomError("Email already registered", 409);
+            throw new CustomError("Email already registered please go to login page", 409);
         }
+
+        // phone_number cant be double
+        if (await findUserAccountByPhoneNumberDB(phone_number)){
+            throw new CustomError("Phone number already registered please go to login page", 409);
+        }
+
+        // SEND SMS VERIFICATION DISINI
+        await sendOTP(phone_number)
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -28,8 +39,6 @@ const createUserAccount = async (email, phone_number, first_name, last_name, pas
         // email, phone_number, first_name, last_name, hashedPassword
         const created = await createUserAccountDB(email, phone_number, first_name, last_name, hashedPassword);
 
-        // SEND EMAIL VERIFICATION DISINI
-        
         const success = new SuccessResponse("User account created successfully", {
             "user_id": created.id,
             "email": created.email,
@@ -44,6 +53,56 @@ const createUserAccount = async (email, phone_number, first_name, last_name, pas
     }
 }
 
+const verifyUserAccountOTP = async (phone_number, code, res) => {
+    try {
+        user = await findUserAccountByPhoneNumberDB(phone_number);
+
+        const verified = await verifyOTP(phone_number, code);
+
+        console.log(verified);
+
+        if (!verified){
+            throw new CustomError("Invalid OTP", 401);
+        }
+
+        if(user.is_verified){
+            throw new CustomError("Phone number already verified", 400);
+        }
+
+        await verifyUserAccountDB(user.email);
+
+        // delete all from userOtp table to save space
+        await deleteAllUserOtpDB(phone_number);
+
+        const success = new SuccessResponse("User account verified successfully");
+        success.send200(res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
+const resendUserAccountOTP = async (phone_number, res) => {
+    try {
+        user = await findUserAccountByPhoneNumberDB(phone_number);
+
+        if (!user){
+            throw new CustomError("Phone number not registered", 404);
+        }
+
+        if (user.is_verified){
+            throw new CustomError("Phone number already verified", 400);
+        }
+
+        await sendOTP(phone_number);
+
+        const success = new SuccessResponse("OTP resent successfully");
+        success.send200(res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+
+}
+
 const validateUserAccount = async (email, password, res) => {
     try{
         if (!email || !password){
@@ -56,7 +115,7 @@ const validateUserAccount = async (email, password, res) => {
         }
 
         if (!user.is_verified){
-            throw new CustomError("Email not verified, please check your email", 403);
+            throw new CustomError("Phone number not verified, please check your sms", 403);
         }
 
         const validPassword = await bcrypt.compare(password, user.password);
@@ -82,5 +141,7 @@ const validateUserAccount = async (email, password, res) => {
 
 module.exports = {
     createUserAccount,
+    verifyUserAccountOTP,
+    resendUserAccountOTP,
     validateUserAccount
 }

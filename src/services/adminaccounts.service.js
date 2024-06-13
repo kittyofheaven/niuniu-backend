@@ -12,12 +12,12 @@ const validateAdminAccount = async (username, password, res) => {
 
         const admin = await findAdminAccountByUsernameDB(username);
         if (!admin){
-            throw new CustomError("Admin not registered", 404);
+            throw new CustomError("Username or password is invalid", 401);
         }
 
         const validPassword = await bcrypt.compare(password, admin.password);
         if (!validPassword){
-            throw new CustomError("Invalid password", 401);
+            throw new CustomError("Username or password is invalid", 401);
         }
 
         const token = jwt.sign({ id: admin.id }, process.env.SECRET_JWT_TOKEN_ADMIN, { expiresIn: '1h' });
