@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('DriverAccounts', {
+    await queryInterface.createTable('AmbulanceProviders', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -17,11 +17,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      first_name: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      last_name: {
+      ambulance_provider_name: {
         allowNull: false,
         type: Sequelize.STRING
       },
@@ -29,17 +25,17 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      hospital_id: {
+      location: {
+        allowNull: false,
+        type: Sequelize.GEOMETRY('POINT')
+      },
+      kota_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: 'AmbulanceProviders',
+          model: 'Kota',
           key: 'id'
         }
-      },
-      is_occupied: {
-        defaultValue: false,
-        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -52,6 +48,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('DriverAccounts');
+    await queryInterface.dropTable('AmbulanceProviders');
   }
 };

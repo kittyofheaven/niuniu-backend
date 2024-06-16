@@ -2,27 +2,17 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('HospitalAccounts', {
+    await queryInterface.createTable('Hospitals', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      email: {
-        allowNull: false,
+      hospital_name: {
         type: Sequelize.STRING
       },
       phone_number: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      hospital_name: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      password: {
-        allowNull: false,
         type: Sequelize.STRING
       },
       kelas: {
@@ -52,6 +42,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('HospitalAccounts');
+    await queryInterface.dropTable('Hospitals');
   }
 };

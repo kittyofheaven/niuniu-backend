@@ -1,12 +1,12 @@
-const { createHospitalAccountDB, findHospitalAccountByEmailDB, findHospitalAccountByNameDB, resetPasswordHospitalAccountDB } = require('../repositories/hospitalaccounts.repository'); 
+const { createAmbulanceProviderDB, findAmbulanceProviderByEmailDB, findAmbulanceProviderByNameDB, resetPasswordAmbulanceProviderDB } = require('../repositories/ambulanceproviders.repository'); 
 const SuccessResponse = require('../middleware/success.middleware')
 const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/error.middleware");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const createHospitalAccount = async (email, phone_number, hospital_name, password, location, res) => {
+const createAmbulanceProvider = async (email, phone_number, ambulance_provider_name, password, location, res) => {
     try{
-        if (!email || !phone_number || !hospital_name || !password || !location){
+        if (!email || !phone_number || !ambulance_provider_name || !password || !location){
             throw new FieldEmptyError("All fields are required");
         }
 
@@ -18,25 +18,25 @@ const createHospitalAccount = async (email, phone_number, hospital_name, passwor
             throw new CustomError("Password must be at least 8 characters", 400);
         }
         
-        if (await findHospitalAccountByEmailDB(email)){
+        if (await findAmbulanceProviderByEmailDB(email)){
             throw new CustomError("Email already registered", 409);
         }
 
-        if (await findHospitalAccountByNameDB(hospital_name)){
+        if (await findAmbulanceProviderByNameDB(ambulance_provider_name)){
             throw new CustomError("Hospital name already registered", 409);
         }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         
-        // email, phone_number, hospital_name, hashedPassword, location
-        const created = await createHospitalAccountDB(email, phone_number, hospital_name, hashedPassword, location);
+        // email, phone_number, ambulance_provider_name, hashedPassword, location
+        const created = await createAmbulanceProviderDB(email, phone_number, ambulance_provider_name, hashedPassword, location);
         
         const success = new SuccessResponse("Hospital account created successfully", {
-            "hospital_id": created.id,
+            "ambulance_provider_id": created.id,
             "email": created.email,
             "phone_number": created.phone_number,
-            "hospital_name": created.hospital_name,
+            "ambulance_provider_name": created.ambulance_provider_name,
             "location": created.location
         });
 
@@ -46,29 +46,29 @@ const createHospitalAccount = async (email, phone_number, hospital_name, passwor
     }
 }
 
-const validateHospitalAccount = async (email, password, res) => {
+const validateAmbulanceProvider = async (email, password, res) => {
     try{
         if (!email || !password){
             throw new FieldEmptyError("All fields are required");
         }
 
-        const hospital = await findHospitalAccountByEmailDB(email);
-        if (!hospital){
+        const ambulance_provider = await findAmbulanceProviderByEmailDB(email);
+        if (!ambulance_provider){
             throw new CustomError("Email not registered", 404);
         }
 
-        const validPassword = await bcrypt.compare(password, hospital.password);
+        const validPassword = await bcrypt.compare(password, ambulance_provider.password);
         if (!validPassword){
             throw new CustomError("Invalid password", 401);
         }
 
-        const token = jwt.sign({id: hospital.id}, process.env.SECRET_JWT_TOKEN_HOSPITAL, {expiresIn: '365d'});
+        const token = jwt.sign({id: ambulance_provider.id}, process.env.SECRET_JWT_TOKEN_HOSPITAL, {expiresIn: '365d'});
         const success = new SuccessResponse("Login successful", {
-            "hospital_id": hospital.id,
-            "email": hospital.email,
-            "phone_number": hospital.phone_number,
-            "hospital_name": hospital.hospital_name,
-            "location": hospital.location,
+            "ambulance_provider_id": ambulance_provider.id,
+            "email": ambulance_provider.email,
+            "phone_number": ambulance_provider.phone_number,
+            "ambulance_provider_name": ambulance_provider.ambulance_provider_name,
+            "location": ambulance_provider.location,
             "token": token
         });
 
@@ -79,6 +79,6 @@ const validateHospitalAccount = async (email, password, res) => {
 }
 
 module.exports = {
-    createHospitalAccount,
-    validateHospitalAccount
+    createAmbulanceProvider,
+    validateAmbulanceProvider
 }

@@ -25,9 +25,11 @@ const sendOTP = async (phone_number) => {
     const encodedMessage = encodeURIComponent(message);
     // https://websms.co.id/api/smsgateway-otp?token=[token]&to=[to]&msg=[msg]
 
-    console.log(phone_number)
+    // console.log(phone_number)
 
     const url = `https://websms.co.id/api/smsgateway-otp?token=${webSmsToken}&to=${phone_number}&msg=${encodedMessage}`;
+
+    // console.log(url);
 
     try {
         const response = await axios.get(url, {

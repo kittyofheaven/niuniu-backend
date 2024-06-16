@@ -15,9 +15,13 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'provinsi_id',
         as: 'provinsi_kota'
       });
-      Kota.hasMany(models.HospitalAccounts, {
+      Kota.hasMany(models.AmbulanceProviders, {
         foreignKey: 'kota_id',
-        as: 'kota_hospitalAccounts'
+        as: 'kota_ambulanceProviders'
+      });
+      Kota.hasMany(models.Hospitals, {
+        foreignKey: 'kota_id',
+        as: 'kota_hospitals'
       });
     }
   }

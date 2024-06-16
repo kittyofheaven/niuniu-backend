@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      DriverAccounts.belongsTo(models.HospitalAccounts, {
-        foreignKey: 'hospital_id',
-        as: 'hospital_driverAccounts'
+      DriverAccounts.belongsTo(models.AmbulanceProviders, {
+        foreignKey: 'ambulance_provider_id',
+        as: 'ambulance_provider_driverAccounts'
       });
       DriverAccounts.hasMany(models.EmergencyEvents, {
         foreignKey: 'driver_id',
@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     first_name: DataTypes.STRING,
     last_name: DataTypes.STRING,
     password: DataTypes.STRING,
-    hospital_id: DataTypes.INTEGER,
+    ambulance_provider_id: DataTypes.INTEGER,
     is_occupied: DataTypes.BOOLEAN
   }, {
     sequelize,

@@ -12,7 +12,7 @@ const {
     findEmergencyEventByHospitalDBIsNotDone,
     updateDoneEmergencyEventDB
 } = require('../repositories/emergencyevents.repository');
-const {findHospitalAccountByIdDB, getAllHospitalAccountsDB, getAllHospitalAccountsByKotaDB} = require('../repositories/hospitalaccounts.repository');
+const {findAmbulanceProviderByIdDB, getAllAmbulanceProvidersDB, getAllAmbulanceProvidersByKotaDB} = require('../repositories/ambulanceproviders.repository');
 const {distanceBetweenTwoPoints} = require('../helpers/distance.helper');
 const {findAllProvinsiDB} = require('../repositories/provinsi.repository');
 const {findAllKotaByProvinsiIdDB} = require('../repositories/kota.repository');
@@ -25,7 +25,7 @@ const { getIo } = require('../sockets');
 
 async function findNearestHospital(userLocation) {
     try {
-    // Assume getAllHospitalAccountsDB() is a function that fetches all hospitals from the database
+    // Assume getAllAmbulanceProvidersDB() is a function that fetches all hospitals from the database
     const allProvinsi = await findAllProvinsiDB();
     let nearestProvinsi = [];
 
@@ -82,7 +82,7 @@ async function findNearestHospital(userLocation) {
     let hospitalIn2Kota = [];
     for (const kota of nearestkota) {
         try {
-            const hospitalInKota = await getAllHospitalAccountsByKotaDB(kota.kotaInProvinsi.id);
+            const hospitalInKota = await getAllAmbulanceProvidersByKotaDB(kota.kotaInProvinsi.id);
             // console.log(hospitalInKota);
             hospitalIn2Kota.push(...hospitalInKota);
         } catch (error) {

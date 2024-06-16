@@ -29,11 +29,19 @@ module.exports = {
           key: 'id'
         }
       },
+      ambulance_provider_id: {
+        defaultValue: null,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'AmbulanceProviders',
+          key: 'id'
+        }
+      },
       hospital_id: {
         defaultValue: null,
         type: Sequelize.INTEGER,
         references: {
-          model: 'HospitalAccounts',
+          model: 'Hospitals',
           key: 'id'
         }
       },

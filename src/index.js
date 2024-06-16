@@ -49,8 +49,8 @@ app.use(`/${prefix}/emergency`, emergencyRoutes);
 const userAccountsRoutes = require('./routes/useraccounts.routes');
 app.use(`/${prefix}/useraccounts`, userAccountsRoutes);
 
-const hospitalAccountsRoutes = require('./routes/hospitalaccounts.routes');
-app.use(`/${prefix}/hospitalaccounts`, hospitalAccountsRoutes);
+const ambulanceProvidersAccountsRoutes = require('./routes/ambulanceproviders.routes');
+app.use(`/${prefix}/ambulanceproviders`, ambulanceProvidersAccountsRoutes);
 
 const driverAccountsRoutes = require('./routes/driveraccounts.routes');
 app.use(`/${prefix}/driveraccounts`, driverAccountsRoutes);
