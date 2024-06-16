@@ -35,13 +35,13 @@ const resendUserAccountOTP = async (req, res) => {
 }
 
 const validateUserAccount = async (req, res) => {
-    try{
-        const { email, password } = req.body;
-        if (!email || !password){
-            throw new FieldEmptyError('Email or password is empty');
+    try {
+        const { identifier, password } = req.body;
+        if (!identifier || !password) {
+            throw new FieldEmptyError('Identifier or password is empty');
         }
-        await accountServices.validateUserAccount(email, password, res);
-    } catch (error){
+        await accountServices.validateUserAccount(identifier, password, res);
+    } catch (error) {
         errorHandler(error, res);
     }
 };

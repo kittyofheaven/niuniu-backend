@@ -103,27 +103,34 @@ const resendUserAccountOTP = async (phone_number, res) => {
 
 }
 
-const validateUserAccount = async (email, password, res) => {
-    try{
-        if (!email || !password){
+const validateUserAccount = async (identifier, password, res) => {
+    try {
+        if (!identifier || !password) {
             throw new FieldEmptyError("All fields are required");
         }
 
-        const user = await findUserAccountByEmailDB(email);
-        if (!user){
-            throw new CustomError("Email not registered", 404);
+        let user;
+        // Check if the identifier is an email or a phone number
+        if (identifier.includes('@')) {
+            user = await findUserAccountByEmailDB(identifier);
+        } else {
+            user = await findUserAccountByPhoneNumberDB(identifier);
         }
 
-        if (!user.is_verified){
+        if (!user) {
+            throw new CustomError("Email or phone number not registered", 404);
+        }
+
+        if (!user.is_verified) {
             throw new CustomError("Phone number not verified, please check your sms", 403);
         }
 
         const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword){
+        if (!validPassword) {
             throw new CustomError("Invalid password", 401);
         }
 
-        const token = jwt.sign({id: user.id}, process.env.SECRET_JWT_TOKEN_USER, {expiresIn: '365d'});
+        const token = jwt.sign({ id: user.id }, process.env.SECRET_JWT_TOKEN_USER, { expiresIn: '365d' });
         const success = new SuccessResponse("User account validated successfully", {
             "user_id": user.id,
             "email": user.email,
@@ -134,10 +141,11 @@ const validateUserAccount = async (email, password, res) => {
         });
 
         success.send200(res);
-    } catch (error){
+    } catch (error) {
         errorHandler(error, res);
     }
-}
+};
+
 
 module.exports = {
     createUserAccount,
