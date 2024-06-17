@@ -27,6 +27,8 @@ const createDriverAccount = async (email, phone_number, first_name, last_name, p
         
         // email, phone_number, first_name, last_name, hashedPassword, hospital_id
         const created = await createDriverAccountDB(email, phone_number, first_name, last_name, hashedPassword, hospital_id);
+
+        console.log(created);
         
         const success = new SuccessResponse("Driver account created successfully", {
             "driver_id": created.id,

@@ -1,0 +1,387 @@
+[   
+    {     
+        "nama_rs": "RSUD Dr. Soetomo",
+        "nomor_telp": "0315501078",
+        "kelas": "A",
+        "lat": "-7.26820381224195",
+        "lng": "112.75806642569326"
+    },
+    {  
+        "nama_rs": "RSAL Dr. Ramelan",
+        "nomor_telp": "0318438153",
+        "kelas": "A",
+        "lat": "-7.309706051468905",
+        "lng": "112.7380681448837"
+    },
+    {
+        "nama_rs": "RS. Universitas Airlangga",
+        "nomor_telp": "0315916290",
+        "kelas": "B",
+        "lat": "-7.2698796",
+        "lng": "112.7848442"
+    },
+    {
+        "nama_rs": "RS. Gigi dan Mulut FKG Unair",
+        "nomor_telp": "0315053195",
+        "kelas": "B",
+        "lat": "-7.2654174",
+        "lng": "112.7574059"
+    },
+    {
+        "nama_rs": "RSU. Premier Surabaya",
+        "nomor_telp": "0315993211",
+        "kelas": "B",
+        "lat": "-7.3044879",
+        "lng": "112.765249"
+    },
+    {
+        "nama_rs": "RS. Husada Utama Surabaya",
+        "nomor_telp": "0315018335",
+        "kelas": "B",
+        "lat": "-7.2653589",
+        "lng": "112.7560989"
+    },
+    {
+        "nama_rs": "RS. Siloam Surabaya",
+        "nomor_telp": "03199206900",
+        "kelas": "B",
+        "lat": "-7.2740112",
+        "lng": "112.7464397"
+    },
+    {
+        "nama_rs": "RS Manyar Medical Center",
+        "nomor_telp": "0315999339",
+        "kelas": "B",
+        "lat": "-7.289889",
+        "lng": "112.763083"
+    },
+    {
+        "nama_rs": "RS. Gigi dan Mulut UHT",
+        "nomor_telp": "03159173300",
+        "kelas": "B",
+        "lat": "-7.2911699",
+        "lng": "112.7952606"
+    },
+    {
+        "nama_rs": "RS. Bhayangkara Tk. II HS Samsoeri Mertojoso",
+        "nomor_telp": "0318292227",
+        "kelas": "B",
+        "lat": "-7.3246853",
+        "lng": "112.731507"
+    },
+    {
+        "nama_rs": "RS. National Hospital",
+        "nomor_telp": "0312975777",
+        "kelas": "B",
+        "lat": "-7.299401",
+        "lng": "112.6764499"
+    },
+    {
+        "nama_rs": "RS. Islam Jemursari",
+        "nomor_telp": "0318471877",
+        "kelas": "B",
+        "lat": "-7.3226354",
+        "lng": "112.739767"
+    },
+    {
+        "nama_rs": "RS. Katholik St. Vincentius A.",
+        "nomor_telp": "0315677562",
+        "kelas": "B",
+        "lat": "-7.2912236",
+        "lng": "112.7361845"
+    },
+    {
+        "nama_rs": "RS. Mitra Keluarga",
+        "nomor_telp": "0317345333",
+        "kelas": "B",
+        "lat": "-7.2668587",
+        "lng": "112.6913132"
+    },
+    {
+        "nama_rs": "RS. Adi Husada Undaan",
+        "nomor_telp": "0315318000",
+        "kelas": "B",
+        "lat": "-7.2516239",
+        "lng": "112.7458645"
+    },
+    {
+        "nama_rs": "RS. Mata Undaan",
+        "nomor_telp": "0315319619",
+        "kelas": "B",
+        "lat": "-7.254545",
+        "lng": "112.743635"
+    },
+    {
+        "nama_rs": "RS. Pelindo Husada Citra (PHC)",
+        "nomor_telp": "062313294118",
+        "kelas": "B",
+        "lat": "-7.209724",
+        "lng": "112.7356839"
+    },
+    {
+        "nama_rs": "RSU Haji",
+        "nomor_telp": "0315924000",
+        "kelas": "B",
+        "lat": "-7.2833287",
+        "lng": "112.7796844"
+    },
+    {
+        "nama_rs": "RSU dr. Mohammad Soewandhie",
+        "nomor_telp": "0313717141",
+        "kelas": "B",
+        "lat": "-7.2459744",
+        "lng": "112.7580038"
+    },
+    {
+        "nama_rs": "RS. Mata Masyarakat Jatim",
+        "nomor_telp": "03182010000",
+        "kelas": "B",
+        "lat": "-7.3257561",
+        "lng": "112.7257489"
+    },
+    {
+        "nama_rs": "RSU. Royal Surabaya",
+        "nomor_telp": "0318476111",
+        "kelas": "C",
+        "lat": "-7.3289922",
+        "lng": "112.7508548"
+    },
+    {
+        "nama_rs": "RSU. Mitra Keluarga Kenjeran",
+        "nomor_telp": "03199000880",
+        "kelas": "C",
+        "lat": "-7.2513324",
+        "lng": "112.7849887"
+    },
+    {
+        "nama_rs": "RSU. Tingkat III Brawijaya",
+        "nomor_telp": "0315668343",
+        "kelas": "C",
+        "lat": "-7.2971309",
+        "lng": "112.7232731"
+    },
+    {
+        "nama_rs": "RS. William Booth",
+        "nomor_telp": "0315678917",
+        "kelas": "C",
+        "lat": "-7.2908644",
+        "lng": "112.7368603"
+    },
+    {
+        "nama_rs": "RS. Islam Surabaya",
+        "nomor_telp": "0318284505",
+        "kelas": "C",
+        "lat": "-7.3063849",
+        "lng": "112.7349753"
+    },
+    {
+        "nama_rs": "RSU Darmo",
+        "nomor_telp": "0315676253",
+        "kelas": "C",
+        "lat": "-7.287414",
+        "lng": "112.73766"
+    },
+    {
+        "nama_rs": "RSUD. Bhakti Darma Husada",
+        "nomor_telp": "0317409135",
+        "kelas": "C",
+        "lat": "-7.2555336",
+        "lng": "112.6356218"
+    },
+    {
+        "nama_rs": "RS. Islam Darus Syifa'",
+        "nomor_telp": "0317406293",
+        "kelas": "C",
+        "lat": "-7.2350114",
+        "lng": "112.612798"
+    },
+    {
+        "nama_rs": "RS. Adi Husada Kapasari",
+        "nomor_telp": "0313764555",
+        "kelas": "C",
+        "lat": "-7.2427127",
+        "lng": "112.7520121"
+    },
+    {
+        "nama_rs": "RSU. Al-Irsyad Surabaya",
+        "nomor_telp": "03199091800",
+        "kelas": "C",
+        "lat": "-7.2280019",
+        "lng": "112.7403981"
+    },
+    {
+        "nama_rs": "RSIA Pura Raharja",
+        "nomor_telp": "0315019898",
+        "kelas": "C",
+        "lat": "-7.2832379",
+        "lng": "112.7527409"
+    },
+    {
+        "nama_rs": "RSIA Putri",
+        "nomor_telp": "0315999987",
+        "kelas": "C",
+        "lat": "-7.2909532",
+        "lng": "112.7826708"
+    },
+    {
+        "nama_rs": "RS. Khusus Onkologi",
+        "nomor_telp": "0315914855",
+        "kelas": "C",
+        "lat": "-7.290787",
+        "lng": "112.789378"
+    },
+    {
+        "nama_rs": "RSIA Kendangsari",
+        "nomor_telp": "0318436200",
+        "kelas": "C",
+        "lat": "-7.3253334",
+        "lng": "112.7453578"
+    },
+    {
+        "nama_rs": "RSIA Kendangsari MERR",
+        "nomor_telp": "0313814388",
+        "kelas": "C",
+        "lat": "-7.2505127",
+        "lng": "112.7837174"
+    },
+    {
+        "nama_rs": "RSIA Ferina",
+        "nomor_telp": "0315057557",
+        "kelas": "C",
+        "lat": "-7.2737952",
+        "lng": "112.7448241"
+    },
+    {
+        "nama_rs": "RSIA Graha Medika",
+        "nomor_telp": "0317523434",
+        "kelas": "C",
+        "lat": "-7.3123728",
+        "lng": "112.6815792"
+    },
+    {
+        "nama_rs": "RSIA Perdana Medika",
+        "nomor_telp": "081213146216",
+        "kelas": "C",
+        "lat": "-7.3295402",
+        "lng": "112.7429142"
+    },
+    {
+        "nama_rs": "RSIA Cempaka Putih",
+        "nomor_telp": "0318282350",
+        "kelas": "C",
+        "lat": "-7.3215713",
+        "lng": "112.714057"
+    },
+    {
+        "nama_rs": "RSIA Lombok Dua Dua",
+        "nomor_telp": "0315022044",
+        "kelas": "C",
+        "lat": "-7.278481",
+        "lng": "112.748947"
+    },
+    {
+        "nama_rs": "RSIA Nur Ummi Numbi",
+        "nomor_telp": "0317404391",
+        "kelas": "C",
+        "lat": "-7.264807",
+        "lng": "112.662077"
+    },
+    {
+        "nama_rs": "RS. Orthopedi dan Traumatologi",
+        "nomor_telp": "03157431574",
+        "kelas": "C",
+        "lat": "-7.2997505",
+        "lng": "112.6621768"
+    },
+    {
+        "nama_rs": "RSIA IBI",
+        "nomor_telp": "0315323837",
+        "kelas": "C",
+        "lat": "-7.245351",
+        "lng": "112.727859"
+    },
+    {
+        "nama_rs": "RSIA Pusura Tegalsari",
+        "nomor_telp": "03130008000",
+        "kelas": "C",
+        "lat": "-7.2660837",
+        "lng": "112.736944"
+    },
+    {
+        "nama_rs": "RS. Gotong Royong",
+        "nomor_telp": "081574535638",
+        "kelas": "D",
+        "lat": "-7.307992",
+        "lng": "112.787757"
+    },
+    {
+        "nama_rs": "RS. Marinir Ewa Pangalila Gunungsari",
+        "nomor_telp": "0315678094",
+        "kelas": "D",
+        "lat": "-7.3041179",
+        "lng": "112.7084213"
+    },
+    {
+        "nama_rs": "RS. TNI AU Soemitro Lanud Surabaya",
+        "nomor_telp": "08113002073",
+        "kelas": "D",
+        "lat": "-7.2915134",
+        "lng": "112.7408637"
+    },
+    {
+        "nama_rs": "RS. Wijaya",
+        "nomor_telp": "0317523087",
+        "kelas": "D",
+        "lat": "-7.3130939",
+        "lng": "112.6917745"
+    },
+    {
+        "nama_rs": "RS. Wiyung Sejahtera",
+        "nomor_telp": "0317532653",
+        "kelas": "D",
+        "lat": "-7.311233",
+        "lng": "112.6880828"
+    },
+    {
+        "nama_rs": "RS. Bhakti Rahayu",
+        "nomor_telp": "0318295922",
+        "kelas": "D",
+        "lat": "-7.3117795",
+        "lng": "112.7229514"
+    },
+    {
+        "nama_rs": "RS. Bunda",
+        "nomor_telp": "0317442220",
+        "kelas": "D",
+        "lat": "-7.2517223",
+        "lng": "112.6504606"
+    },
+    {
+        "nama_rs": "RS. Muji Rahayu",
+        "nomor_telp": "0317404132",
+        "kelas": "D",
+        "lat": "-7.257172",
+        "lng": "112.670966"
+    },
+    {
+        "nama_rs": "RS. Surabaya Medical Service",
+        "nomor_telp": "082139882229",
+        "kelas": "D",
+        "lat": "-7.289055",
+        "lng": "112.741496"
+    },
+    {
+        "nama_rs": "RS. TNI AL Dr. Oepomo",
+        "nomor_telp": "0313293536",
+        "kelas": "D",
+        "lat": "-7.211797",
+        "lng": "112.7241067"
+    },
+    {
+        "nama_rs": "RS. PKU Muhammadiyah",
+        "nomor_telp": "082311262646",
+        "kelas": "D",
+        "lat": "-7.229892",
+        "lng": "112.7411918"
+    }
+]

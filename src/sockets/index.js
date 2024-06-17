@@ -204,12 +204,14 @@ const initializeSocket = (server) => {
             // }
 
             try{
+                console.log(data.emergency_event_id);
+
                 const emergencyEventId = data.emergency_event_id;
                 if (emergencyEventId == undefined) {
-                    console.log(`Emergency event ID not provided by ${role}${user_id}`);
+                    console.log(`emergency_event_id not provided by ${role}${user_id}`);
                     io.to(`${role}${user_id}`).emit('emergency', {
                         status: 'error',
-                        message: 'Emergency event ID not provided'
+                        message: 'emergency_event_id not provided'
                     });
                     return;
                 }

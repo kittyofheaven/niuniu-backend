@@ -29,7 +29,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      hospital_id: {
+      ambulance_provider_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {

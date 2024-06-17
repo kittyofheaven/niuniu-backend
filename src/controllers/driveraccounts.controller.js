@@ -2,9 +2,9 @@ const { UnknownError, CustomError, FieldEmptyError, UserNotFoundError, errorHand
 const driverAccountsServices = require('../services/driveraccounts.service');
 
 const createDriverAccount = async (req, res) => {
-    const { email, phone_number, first_name, last_name, password} = req.body;
+    const { email, phone_number, first_name, last_name, password, ambulance_provider_id} = req.body;
     try{
-        await driverAccountsServices.createDriverAccount(email, phone_number, first_name, last_name, password, req.hospitalAccount.id, res);
+        await driverAccountsServices.createDriverAccount(email, phone_number, first_name, last_name, password, ambulance_provider_id, res);
     } catch (error){
         errorHandler(error, res);
     }
