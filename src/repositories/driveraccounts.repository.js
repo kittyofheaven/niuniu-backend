@@ -7,15 +7,15 @@ const driverAccounts = models.DriverAccounts;
 // first_name: DataTypes.STRING,
 // last_name: DataTypes.STRING,
 // password: DataTypes.STRING,
-// hospital_id: DataTypes.INTEGER
-const createDriverAccountDB = async (email, phone_number, first_name, last_name, hashedPassword, hospital_id) => {
+// ambulance_provider_id: DataTypes.INTEGER
+const createDriverAccountDB = async (email, phone_number, first_name, last_name, hashedPassword, ambulance_provider_id) => {
     return driverAccounts.create({
         email: email,
         phone_number: phone_number,
         first_name: first_name,
         last_name: last_name,
         password: hashedPassword,
-        hospital_id: hospital_id
+        ambulance_provider_id: ambulance_provider_id
     });
 }
 
@@ -32,11 +32,11 @@ const findDriverAccountByEmailDB = async (email) => {
     }
 }
 
-const findDriverAccountByHospitalDB = async (hospital_id) => {
+const findDriverAccountByHospitalDB = async (ambulance_provider_id) => {
     try{
         return await driverAccounts.findAll({
             where: {
-                hospital_id
+                ambulance_provider_id
             }
         });
     }

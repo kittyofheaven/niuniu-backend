@@ -4,9 +4,9 @@ const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/er
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const createDriverAccount = async (email, phone_number, first_name, last_name, password, hospital_id, res) => {
+const createDriverAccount = async (email, phone_number, first_name, last_name, password, ambulance_provider_id, res) => {
     try{
-        if (!email || !phone_number || !first_name || !last_name || !password || !hospital_id){
+        if (!email || !phone_number || !first_name || !last_name || !password || !ambulance_provider_id){
             throw new FieldEmptyError("All fields are required");
         }
 
@@ -25,8 +25,8 @@ const createDriverAccount = async (email, phone_number, first_name, last_name, p
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         
-        // email, phone_number, first_name, last_name, hashedPassword, hospital_id
-        const created = await createDriverAccountDB(email, phone_number, first_name, last_name, hashedPassword, hospital_id);
+        // email, phone_number, first_name, last_name, hashedPassword, ambulance_provider_id
+        const created = await createDriverAccountDB(email, phone_number, first_name, last_name, hashedPassword, ambulance_provider_id);
 
         console.log(created);
         
@@ -36,7 +36,7 @@ const createDriverAccount = async (email, phone_number, first_name, last_name, p
             "phone_number": created.phone_number,
             "first_name": created.first_name,
             "last_name": created.last_name,
-            "hospital_id": created.hospital_id
+            "ambulance_provider_id": created.ambulance_provider_id
         });
 
         success.send201(res);
@@ -69,7 +69,7 @@ const validateDriverAccount = async (email, password, res) => {
             "phone_number": driver.phone_number,
             "first_name": driver.first_name,
             "last_name": driver.last_name,
-            "hospital_id": driver.hospital_id,
+            "ambulance_provider_id": driver.ambulance_provider_id,
             "token": token
         });
 
