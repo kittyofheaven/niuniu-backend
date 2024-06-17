@@ -228,21 +228,22 @@ const initializeSocket = (server) => {
 
                 if(role == "driver"){
                     const driver_location = data.driver_location;
+                    console.log(driver_location);
 
-                    io.to(`hospital${emergencyEvent.hospital_id}`).emit('tracking', {
+                    io.to(`user${emergencyEvent.user_id}`).emit('tracking', {
                         status: 'success',
                         emergency_event_id: emergencyEventId,
                         driver_id: user_id,
                         location: driver_location,
                         message: 'Driver location updated successfully'
                     });
-                    io.to(`user${emergencyEvent.hospital_id}`).emit('tracking', {
-                        status: 'success',
-                        emergency_event_id: emergencyEventId,
-                        driver_id: user_id,
-                        location: driver_location,
-                        message: 'Driver location updated successfully'
-                    });
+                    // io.to(`user${emergencyEvent.hospital_id}`).emit('tracking', {
+                    //     status: 'success',
+                    //     emergency_event_id: emergencyEventId,
+                    //     driver_id: user_id,
+                    //     location: driver_location,
+                    //     message: 'Driver location updated successfully'
+                    // });
                 }
 
                 if(role == "user"){
@@ -255,13 +256,13 @@ const initializeSocket = (server) => {
                         location: user_location,
                         message: 'User location updated successfully'
                     });
-                    io.to(`hospital${emergencyEvent.hospital_id}`).emit('tracking', {
-                        status: 'success',
-                        emergency_event_id: emergencyEventId,
-                        user_id: user_id,
-                        location: user_location,
-                        message: 'User location updated successfully'
-                    });
+                    // io.to(`hospital${emergencyEvent.hospital_id}`).emit('tracking', {
+                    //     status: 'success',
+                    //     emergency_event_id: emergencyEventId,
+                    //     user_id: user_id,
+                    //     location: user_location,
+                    //     message: 'User location updated successfully'
+                    // });
                 }
 
             }
