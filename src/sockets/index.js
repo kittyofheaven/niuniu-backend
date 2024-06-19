@@ -1,6 +1,8 @@
 const { Server } = require("socket.io");
 const { authenticateHospitalSocket, authenticateDriverSocket, authenticateUserSocket } = require('../middleware/socketauth.middleware');
 const { updateHospitalIdEmergencyEventDB, updateDriverIdEmergencyEventDB, findEmergencyEventByIdDB} = require('../repositories/emergencyevents.repository');
+const { getTimeInUTCOffset } = require('../helpers/time.helper');
+
 
 let io;
 
@@ -321,6 +323,7 @@ const initializeSocket = (server) => {
                         emergency_event_id: emergencyEventId,
                         driver_id: user_id,
                         message: message,
+                        time : getTimeInUTCOffset(7)
                     });
 
                     io.to(`driver${emergencyEvent.driver_id}`).emit('chat', {
@@ -328,6 +331,7 @@ const initializeSocket = (server) => {
                         emergency_event_id: emergencyEventId,
                         user_id: user_id,
                         sent_message: message,
+                        time: getTimeInUTCOffset(7)
                     });
 
                 }
@@ -339,6 +343,7 @@ const initializeSocket = (server) => {
                         emergency_event_id: emergencyEventId,
                         user_id: user_id,
                         message: message,
+                        time: getTimeInUTCOffset(7)
                     });
 
                     io.to(`user${emergencyEvent.user_id}`).emit('chat', {
@@ -346,16 +351,17 @@ const initializeSocket = (server) => {
                         emergency_event_id: emergencyEventId,
                         driver_id: user_id,
                         sent_message: message,
+                        time: getTimeInUTCOffset(7)
                     });
                 }
 
             }
             catch(error){
                 console.error('Error handling chat event:', error);
-                io.to(`${role}${user_id}`).emit('chat', {
-                    status: 'error',
-                    message: 'An error occurred while processing the chat event'
-                });
+                // io.to(`${role}${user_id}`).emit('chat', {
+                //     status: 'error',
+                //     message: 'An error occurred while processing the chat event'
+                // });
             }
         })
 
