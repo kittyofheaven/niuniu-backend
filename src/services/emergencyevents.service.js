@@ -294,6 +294,138 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
     }
 }
 
+const getAllUserEmergencyEvents = async (user_id, res) => {
+    try{
+        if (!user_id){
+            throw new FieldEmptyError("User id is required");
+        }
+
+        const allUserEmergencyEvents = await findEmergencyEventByUserDB(user_id);
+
+        const success = new SuccessResponse("All user emergency events", allUserEmergencyEvents);
+
+        success.send200(res);
+    } catch (error){
+        throw error;
+    }
+}
+
+const getAllUserEmergencyEventsIsDone = async (user_id, res) => {
+    try{
+        if (!user_id){
+            throw new FieldEmptyError("User id is required");
+        }
+
+        const allUserEmergencyEventsIsDone = await findEmergencyEventByUserDBIsDone(user_id);
+
+        const success = new SuccessResponse("All user emergency events is done", allUserEmergencyEventsIsDone);
+
+        success.send200(res);
+    } catch (error){
+        throw error;
+    }
+}
+
+const getAllUserEmergencyEventsIsNotDone = async (user_id, res) => {
+    try{
+        if (!user_id){
+            throw new FieldEmptyError("User id is required");
+        }
+
+        const allUserEmergencyEventsIsNotDone = await findEmergencyEventByUserDBIsNotDone(user_id);
+
+        const success = new SuccessResponse("All user emergency events is not done", allUserEmergencyEventsIsNotDone);
+
+        success.send200(res);
+    } catch (error){
+        throw error;
+    }
+}
+
+const getAllDriverEmergencyEvents = async (driver_id, res) => {
+    try{
+        if (!driver_id){
+            throw new FieldEmptyError("Driver id is required");
+        }
+
+        const allDriverEmergencyEvents = await findEmergencyEventByDriverDB(driver_id);
+
+        const success = new SuccessResponse("All driver emergency events", allDriverEmergencyEvents);
+
+        success.send200(res);
+    } catch (error){
+        throw error;
+    }
+}
+
+const getAllDriverEmergencyEventsIsDone = async (driver_id, res) => {
+    try{
+        if (!driver_id){
+            throw new FieldEmptyError("Driver id is required");
+        }
+
+        const allDriverEmergencyEventsIsDone = await findEmergencyEventByDriverDBIsDone(driver_id);
+
+        const success = new SuccessResponse("All driver emergency events is done", allDriverEmergencyEventsIsDone);
+
+        success.send200(res);
+    } catch (error){
+        throw error;
+    }
+}
+
+const getAllDriverEmergencyEventsIsNotDone = async (driver_id, res) => {
+    try{
+        if (!driver_id){
+            throw new FieldEmptyError("Driver id is required");
+        }
+
+        const allDriverEmergencyEventsIsNotDone = await findEmergencyEventByDriverDBIsNotDone(driver_id);
+
+        const success = new SuccessResponse("All driver emergency events is not done", allDriverEmergencyEventsIsNotDone);
+
+        success.send200(res);
+    } catch (error){
+        throw error;
+    }
+}
+
+const updateDoneEmergencyEvent = async (driver_id, emergency_event_id, res) => {
+    try{
+        if (!emergency_event_id){
+            throw new FieldEmptyError("Emergency event id is required");
+        }
+
+        const emergencyEvent = await findEmergencyEventByIdDB(emergency_event_id);
+        if(emergencyEvent == null){
+            throw new CustomError("Emergency event not found", 404);
+        }
+
+        if(emergencyEvent.driver_id != driver_id){
+            throw new CustomError("Driver is not authorized to update this emergency event", 401);
+        }
+
+        const updated = await updateDoneEmergencyEventDB(emergency_event_id);
+
+        if(updated[0] == 0){
+            throw new CustomError("Emergency event not found", 404);
+        }
+
+        const success = new SuccessResponse("Emergency event updated successfully", updated);
+
+        success.send200(res);
+    } catch (error){
+        throw error;
+    }
+}
+
 module.exports = {
-    createEmergencyEvent
+    createEmergencyEvent,
+    getAllUserEmergencyEvents,
+    getAllUserEmergencyEventsIsDone,
+    getAllUserEmergencyEventsIsNotDone,
+    getAllDriverEmergencyEvents,
+    getAllDriverEmergencyEventsIsDone,
+    getAllDriverEmergencyEventsIsNotDone,
+    updateDoneEmergencyEvent
 }
