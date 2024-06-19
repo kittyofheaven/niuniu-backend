@@ -293,7 +293,7 @@ const initializeSocket = (server) => {
                 const user_id = socket.user.id;
                 const role = socket.handshake.auth.role;
 
-                console.log(data);
+                // console.log(data);
 
                 const emergencyEventId = data.emergency_event_id;
                 if (emergencyEventId == undefined) {
