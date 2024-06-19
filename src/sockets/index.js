@@ -321,6 +321,7 @@ const initializeSocket = (server) => {
                     io.to(`user${emergencyEvent.user_id}`).emit('chat', {
                         status: 'success',
                         emergency_event_id: emergencyEventId,
+                        from: "driver",
                         driver_id: user_id,
                         message: message,
                         time : getTimeInUTCOffset(7)
@@ -329,7 +330,8 @@ const initializeSocket = (server) => {
                     io.to(`driver${emergencyEvent.driver_id}`).emit('chat', {
                         status: 'sent',
                         emergency_event_id: emergencyEventId,
-                        user_id: user_id,
+                        from: "driver",
+                        driver_id: user_id,
                         sent_message: message,
                         time: getTimeInUTCOffset(7)
                     });
@@ -341,6 +343,7 @@ const initializeSocket = (server) => {
                     io.to(`driver${emergencyEvent.driver_id}`).emit('chat', {
                         status: 'success',
                         emergency_event_id: emergencyEventId,
+                        from: "user",
                         user_id: user_id,
                         message: message,
                         time: getTimeInUTCOffset(7)
@@ -349,7 +352,8 @@ const initializeSocket = (server) => {
                     io.to(`user${emergencyEvent.user_id}`).emit('chat', {
                         status: 'sent',
                         emergency_event_id: emergencyEventId,
-                        driver_id: user_id,
+                        from: "user",
+                        user_id: user_id,
                         sent_message: message,
                         time: getTimeInUTCOffset(7)
                     });
