@@ -41,6 +41,10 @@ module.exports = {
         defaultValue: false,
         type: Sequelize.BOOLEAN
       },
+      fcm_token: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

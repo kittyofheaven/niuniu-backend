@@ -33,7 +33,8 @@ module.exports = (sequelize, DataTypes) => {
     last_name: DataTypes.STRING,
     password: DataTypes.STRING,
     ambulance_provider_id: DataTypes.INTEGER,
-    is_occupied: DataTypes.BOOLEAN
+    is_occupied: DataTypes.BOOLEAN,
+    fcm_token: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'DriverAccounts',

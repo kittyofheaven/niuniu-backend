@@ -175,9 +175,7 @@ const initializeSocket = (server) => {
 
         // TRACKING
         socket.on("tracking", async (data)=> {
-            const user_id = socket.user.id;
-            const role = socket.handshake.auth.role;
-            console.log(`Tracking event received from ${socket.id} with ${user_id} id and ${role}:`, data);
+            // console.log(`Tracking event received from ${socket.id} with ${user_id} id and ${role}:`, data);
 
             // {
             //     ext auth token ...
@@ -204,7 +202,11 @@ const initializeSocket = (server) => {
             // }
 
             try{
-                console.log(data.emergency_event_id);
+
+                const user_id = socket.user.id;
+                const role = socket.handshake.auth.role;
+
+                // console.log(data.emergency_event_id);
 
                 const emergencyEventId = data.emergency_event_id;
                 if (emergencyEventId == undefined) {
@@ -282,8 +284,81 @@ const initializeSocket = (server) => {
         socket.on("status", (data) => {
             const user_id = socket.user.id;
             const role = socket.handshake.auth.role;
-
         })
+
+        socket.on("chat", async (data) => {
+            try{
+                const user_id = socket.user.id;
+                const role = socket.handshake.auth.role;
+
+                console.log(data);
+
+                const emergencyEventId = data.emergency_event_id;
+                if (emergencyEventId == undefined) {
+                    console.log(`emergency_event_id not provided by ${role}${user_id}`);
+                    io.to(`${role}${user_id}`).emit('chat', {
+                        status: 'error',
+                        message: 'emergency_event_id not provided'
+                    });
+                    return;
+                }
+
+                const emergencyEvent = await findEmergencyEventByIdDB(emergencyEventId);
+                if (!emergencyEvent) {
+                    console.log(`Emergency event not found with ID ${emergencyEventId}`);
+                    io.to(`${role}${user_id}`).emit('chat', {
+                        status: 'error',
+                        message: 'Emergency event not found'
+                    });
+                    return;
+                }
+
+                if(role == "driver"){
+                    const message = data.message;
+
+                    io.to(`user${emergencyEvent.user_id}`).emit('chat', {
+                        status: 'success',
+                        emergency_event_id: emergencyEventId,
+                        driver_id: user_id,
+                        message: message,
+                    });
+
+                    io.to(`driver${emergencyEvent.driver_id}`).emit('chat', {
+                        status: 'sent',
+                        emergency_event_id: emergencyEventId,
+                        user_id: user_id,
+                        sent_message: message,
+                    });
+
+                }
+                else if(role == "user"){
+                    const message = data.message;
+
+                    io.to(`driver${emergencyEvent.driver_id}`).emit('chat', {
+                        status: 'success',
+                        emergency_event_id: emergencyEventId,
+                        user_id: user_id,
+                        message: message,
+                    });
+
+                    io.to(`user${emergencyEvent.user_id}`).emit('chat', {
+                        status: 'sent',
+                        emergency_event_id: emergencyEventId,
+                        driver_id: user_id,
+                        sent_message: message,
+                    });
+                }
+
+            }
+            catch(error){
+                console.error('Error handling chat event:', error);
+                io.to(`${role}${user_id}`).emit('chat', {
+                    status: 'error',
+                    message: 'An error occurred while processing the chat event'
+                });
+            }
+        })
+
         // SOCKET STATUS END
 
         socket.on("disconnect", () => {
