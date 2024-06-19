@@ -405,6 +405,10 @@ const updateDoneEmergencyEvent = async (driver_id, emergency_event_id, res) => {
             throw new CustomError("Driver is not authorized to update this emergency event", 401);
         }
 
+        if(emergencyEvent.is_done == true){
+            throw new CustomError("Emergency event is already done", 400);
+        }
+
         const updated = await updateDoneEmergencyEventDB(emergency_event_id);
 
         if(updated[0] == 0){

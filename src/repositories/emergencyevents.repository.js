@@ -43,7 +43,8 @@ const findEmergencyEventByUserDB = async (user_id) => {
         return await emergencyEvents.findAll({
             where: {
                 user_id
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
     }
     catch (error){
@@ -57,7 +58,8 @@ const findEmergencyEventByUserDBIsDone = async (user_id) => {
             where: {
                 user_id,
                 is_done: true
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
     }
     catch (error){
@@ -71,7 +73,8 @@ const findEmergencyEventByUserDBIsNotDone = async (user_id) => {
             where: {
                 user_id,
                 is_done: false
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
     }
     catch (error){
@@ -85,7 +88,8 @@ const findEmergencyEventByDriverDB = async (driver_id) => {
         return await emergencyEvents.findAll({
             where: {
                 driver_id
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
     }
     catch (error){
@@ -99,7 +103,8 @@ const findEmergencyEventByDriverDBIsDone = async (driver_id) => {
             where: {
                 driver_id,
                 is_done: true
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
     }
     catch (error){
@@ -113,13 +118,15 @@ const findEmergencyEventByDriverDBIsNotDone = async (driver_id) => {
             where: {
                 driver_id,
                 is_done: false
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
     }
     catch (error){
         console.log(error);
     }
 }
+
 
 // HOSPITAL
 const findEmergencyEventByHospitalDB = async (hospital_id) => {
