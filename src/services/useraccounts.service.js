@@ -1,4 +1,4 @@
-const { createUserAccountDB, findUserAccountByEmailDB, findUserAccountByPhoneNumberDB, resetPasswordUserAccountDB, verifyUserAccountDB } = require ('../repositories/useraccounts.repository')
+const { createUserAccountDB, findUserAccountByEmailDB, findUserAccountByPhoneNumberDB, resetPasswordUserAccountDB, verifyUserAccountDB, insertFcmtokenDB, deleteFcmTokenDB } = require ('../repositories/useraccounts.repository')
 const SuccessResponse = require('../middleware/success.middleware')
 const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/error.middleware");
 const bcrypt = require('bcrypt');
@@ -103,7 +103,7 @@ const resendUserAccountOTP = async (phone_number, res) => {
 
 }
 
-const validateUserAccount = async (identifier, password, res) => {
+const validateUserAccount = async (identifier, password, fcm_token, res) => {
     try {
         if (!identifier || !password) {
             throw new FieldEmptyError("All fields are required");
@@ -130,6 +130,7 @@ const validateUserAccount = async (identifier, password, res) => {
             throw new CustomError("Invalid password", 401);
         }
 
+        await insertFcmtokenDB(user.id, fcm_token);
         const token = jwt.sign({ id: user.id }, process.env.SECRET_JWT_TOKEN_USER, { expiresIn: '365d' });
         const success = new SuccessResponse("User account validated successfully", {
             "user_id": user.id,
@@ -137,6 +138,7 @@ const validateUserAccount = async (identifier, password, res) => {
             "phone_number": user.phone_number,
             "first_name": user.first_name,
             "last_name": user.last_name,
+            "fcm_token": fcm_token,
             "token": token
         });
 
@@ -146,10 +148,26 @@ const validateUserAccount = async (identifier, password, res) => {
     }
 };
 
+const logoutUserAccount = async (user_id, res) => {
+    try {
+        const created_fcm_token = await deleteFcmTokenDB(user_id);
+
+        const success = new SuccessResponse("Logout successful", {
+            "user_id": user_id,
+            "fcm_token": created_fcm_token
+        });
+
+        success.send200(res);
+    } catch (error) {
+        errorHandler(error, res);
+    }
+}
+
 
 module.exports = {
     createUserAccount,
     verifyUserAccountOTP,
     resendUserAccountOTP,
-    validateUserAccount
+    validateUserAccount,
+    logoutUserAccount
 }

@@ -68,10 +68,42 @@ const verifyUserAccountDB = async (email) => {
     }
 }
 
+const insertFcmtokenDB = async (id, fcm_token) => {
+    try{
+        return await userAccounts.update({
+            fcm_token
+        }, {
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+const deleteFcmTokenDB = async (id) => {
+    try{
+        return await userAccounts.update({
+            fcm_token: null
+        }, {
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 module.exports = {
     createUserAccountDB,
     findUserAccountByEmailDB,
     findUserAccountByPhoneNumberDB,
     resetPasswordUserAccountDB,
-    verifyUserAccountDB
+    verifyUserAccountDB,
+    insertFcmtokenDB,
+    deleteFcmTokenDB
 }

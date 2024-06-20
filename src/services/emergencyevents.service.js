@@ -16,6 +16,7 @@ const {findAmbulanceProviderByIdDB, getAllAmbulanceProvidersDB, getAllAmbulanceP
 const {distanceBetweenTwoPoints} = require('../helpers/distance.helper');
 const {findAllProvinsiDB} = require('../repositories/provinsi.repository');
 const {findAllKotaByProvinsiIdDB} = require('../repositories/kota.repository');
+const {FindAllDriverByAmbulanceProviderDB} = require('../repositories/driveraccounts.repository');
 
 const {createHospitalDB, findHospitalByIdDB, findAllHospitalsByCityAndClassListDB} = require('../repositories/hospitals.repository');
 const {getHospitalClassification} = require('../helpers/hospitalclassifications.helper');
@@ -25,6 +26,7 @@ const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/er
 const { all } = require('../routes/emergencyevents.routes');
 
 const { getIo } = require('../sockets');
+const { getMessaging } = require('firebase-admin/messaging');
 
 async function findNearestAmbulanceProvider(userLocation) {
     try {
@@ -247,9 +249,41 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
 
         // search for nearest ambulance provider
         const nearestAmbulanceProvider = await findNearestAmbulanceProvider(user_location);
-        // console.log(nearestAmbulanceProvider.id);
+        console.log(nearestAmbulanceProvider.id);
 
         // GANTI PAKE FCM KE DRIVER
+        const allDriver = await FindAllDriverByAmbulanceProviderDB(nearestAmbulanceProvider.id);
+        allDriver.forEach(driver => {
+            // fcm driver
+            const message = {
+                notification: {
+                    title: 'Emergency Event',
+                    body: {
+                        emergency_event_id: created.id,
+                        user_id: user_id,
+                        user_location: user_location,
+                        emergency_type: emergency_type,
+                        number_of_patient: number_of_patient,
+                        title: title,
+                        descriptions: descriptions
+                    }
+                },
+                token: "cov6glZCR6eapv4KreRjN9:APA91bFhiH6pz-lY7rWPQZiwL2cfMVHMf8nXwcVfGtlWUfw5enbV6f7x1vgd68JKIdHHBeaaFz-CLK6UlnjoxPpPAZHRYUTOaeIXbOLj5TB75J0qghiB35QMZhT79PSHbho33SgPGuxg"
+            }
+
+            console.log("sending fcm")
+
+            getMessaging().send(message)
+            .then((response) => {
+                console.log('Successfully sent message:', response);
+            })
+            .catch((error) => {
+                console.error('Error sending message:', error);
+            });
+
+        })
+        
+
 
         // io.to(`hospital${nearestHospital.id}`).emit("emergency", {
         //     "emergency_event_id": created.id,

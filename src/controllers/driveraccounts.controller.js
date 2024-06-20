@@ -12,11 +12,20 @@ const createDriverAccount = async (req, res) => {
 
 const validateDriverAccount = async (req, res) => {
     try{
-        const { email, password } = req.body;
-        if (!email || !password){
-            throw new FieldEmptyError('Email or password is empty');
+        const { email, password, fcm_token } = req.body;
+        if (!email || !password || !fcm_token){
+            throw new FieldEmptyError('Email or password or fcm_token is empty');
         }
-        await driverAccountsServices.validateDriverAccount(email, password, res);
+        await driverAccountsServices.validateDriverAccount(email, password, fcm_token,  res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
+const logoutDriverAccount = async (req, res) => {
+    try{
+        const driver_id = req.driverAccount.id;
+        await driverAccountsServices.logoutDriverAccount(driver_id, res);
     } catch (error){
         errorHandler(error, res);
     }
@@ -24,5 +33,6 @@ const validateDriverAccount = async (req, res) => {
 
 module.exports = {
     createDriverAccount,
-    validateDriverAccount
+    validateDriverAccount,
+    logoutDriverAccount
 }

@@ -1,4 +1,4 @@
-const { createDriverAccountDB, findDriverAccountByEmailDB, findDriverAccountByHospitalDB, resetPasswordDriverAccountDB } = require('../repositories/driveraccounts.repository');
+    const { createDriverAccountDB, findDriverAccountByEmailDB, findDriverAccountByHospitalDB, resetPasswordDriverAccountDB, insertFcmtokenDB, deleteFcmTokenDB} = require('../repositories/driveraccounts.repository');
 const SuccessResponse = require('../middleware/success.middleware')
 const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/error.middleware");
 const bcrypt = require('bcrypt');
@@ -45,7 +45,7 @@ const createDriverAccount = async (email, phone_number, first_name, last_name, p
     }
 }
 
-const validateDriverAccount = async (email, password, res) => {
+const validateDriverAccount = async (email, password, fcm_token, res) => {
     try{
         if (!email || !password){
             throw new FieldEmptyError("All fields are required");
@@ -61,6 +61,8 @@ const validateDriverAccount = async (email, password, res) => {
             throw new CustomError("Invalid password", 401);
         }
 
+        const created_fcm_token = await insertFcmtokenDB(driver.id, fcm_token);
+
         const token = jwt.sign({ id: driver.id }, process.env.SECRET_JWT_TOKEN_DRIVER, { expiresIn: '365d' });
 
         const success = new SuccessResponse("Login successful", {
@@ -70,6 +72,7 @@ const validateDriverAccount = async (email, password, res) => {
             "first_name": driver.first_name,
             "last_name": driver.last_name,
             "ambulance_provider_id": driver.ambulance_provider_id,
+            "fcm_token": created_fcm_token,
             "token": token
         });
 
@@ -79,7 +82,24 @@ const validateDriverAccount = async (email, password, res) => {
     }
 }
 
+const logoutDriverAccount = async (driver_id, res) => {
+    try{
+        const created_fcm_token = await deleteFcmTokenDB(driver_id);
+
+        const success = new SuccessResponse("Logout successful", {
+            "driver_id": driver_id,
+            "fcm_token": created_fcm_token
+        });
+
+        success.send200(res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+
+}
+
 module.exports = {
     createDriverAccount,
-    validateDriverAccount
+    validateDriverAccount,
+    logoutDriverAccount
 }

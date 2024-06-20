@@ -61,9 +61,55 @@ const resetPasswordDriverAccountDB = async (email, newHashedPassword) => {
     
 }
 
+const insertFcmtokenDB = async (id, fcm_token) => {
+    try{
+        return await driverAccounts.update({
+            fcm_token
+        }, {
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+const deleteFcmTokenDB = async (id) => {
+    try{
+        return await driverAccounts.update({
+            fcm_token: null
+        }, {
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+const FindAllDriverByAmbulanceProviderDB = async (ambulance_provider_id) => {
+    try{
+        return await driverAccounts.findAll({
+            where: {
+                ambulance_provider_id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 module.exports = {
     createDriverAccountDB,
     findDriverAccountByEmailDB,
     findDriverAccountByHospitalDB,
-    resetPasswordDriverAccountDB
+    resetPasswordDriverAccountDB,
+    insertFcmtokenDB,
+    deleteFcmTokenDB,
+    FindAllDriverByAmbulanceProviderDB
 }

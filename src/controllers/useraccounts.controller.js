@@ -36,19 +36,29 @@ const resendUserAccountOTP = async (req, res) => {
 
 const validateUserAccount = async (req, res) => {
     try {
-        const { identifier, password } = req.body;
-        if (!identifier || !password) {
-            throw new FieldEmptyError('Identifier or password is empty');
+        const { identifier, password, fcm_token } = req.body;
+        if (!identifier || !password || !fcm_token){
+            throw new FieldEmptyError('Identifier or password or fcm_token is empty');
         }
-        await accountServices.validateUserAccount(identifier, password, res);
+        await accountServices.validateUserAccount(identifier, password, fcm_token, res);
     } catch (error) {
         errorHandler(error, res);
     }
 };
 
+const logoutUserAccount = async (req, res) => {
+    try{
+        const user_id = req.userAccount.id;
+        await accountServices.logoutUserAccount(user_id, res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
 module.exports = {
     createUserAccount,
     verifyUserAccountOTP,
     resendUserAccountOTP,
-    validateUserAccount
+    validateUserAccount,
+    logoutUserAccount
 }
