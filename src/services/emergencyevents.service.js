@@ -28,97 +28,88 @@ const { all } = require('../routes/emergencyevents.routes');
 const { getIo } = require('../sockets');
 const { getMessaging } = require('firebase-admin/messaging');
 
-async function findNearestAmbulanceProvider(userLocation) {
+const { sendNotification } = require('../helpers/sendnotification.helper');
+const { json } = require('sequelize');
+
+async function findNearestAmbulanceProviders(userLocation, n = 1) {
     try {
-    // Assume getAllAmbulanceProvidersDB() is a function that fetches all ambulanceproviders from the database
-    const allProvinsi = await findAllProvinsiDB();
-    let nearestProvinsi = [];
+        // Assume getAllAmbulanceProvidersDB() is a function that fetches all ambulanceproviders from the database
+        const allProvinsi = await findAllProvinsiDB();
+        let nearestProvinsi = [];
 
-    // get two nearest provinsi
-    allProvinsi.forEach(provinsi => {
-        const provinsiCoordinates = provinsi.location.coordinates;
-        const distance = distanceBetweenTwoPoints(userLocation.coordinates, provinsiCoordinates);
+        // get two nearest provinsi
+        allProvinsi.forEach(provinsi => {
+            const provinsiCoordinates = provinsi.location.coordinates;
+            const distance = distanceBetweenTwoPoints(userLocation.coordinates, provinsiCoordinates);
 
-        if (nearestProvinsi.length < 2) {
-        nearestProvinsi.push({provinsi, distance});
-        } else {
-        nearestProvinsi.sort((a, b) => a.distance - b.distance);
-        if (distance < nearestProvinsi[1].distance) {
-            nearestProvinsi[1] = {provinsi, distance};
+            if (nearestProvinsi.length < 2) {
+                nearestProvinsi.push({ provinsi, distance });
+            } else {
+                nearestProvinsi.sort((a, b) => a.distance - b.distance);
+                if (distance < nearestProvinsi[1].distance) {
+                    nearestProvinsi[1] = { provinsi, distance };
+                }
+            }
+        });
+
+        let kotaIn2Provinsi = [];
+        for (const provinsi of nearestProvinsi) {
+            try {
+                const kotaInProvinsi = await findAllKotaByProvinsiIdDB(provinsi.provinsi.id);
+                kotaIn2Provinsi.push(...kotaInProvinsi);
+            } catch (error) {
+                console.error(`Error fetching kota for provinsi ${provinsi.provinsi.id}:`, error);
+            }
         }
+
+        let nearestKota = [];
+
+        // print all kota in 2 nearest provinsi
+        kotaIn2Provinsi.forEach(kotaInProvinsi => {
+            const kotaCoordinates = kotaInProvinsi.location.coordinates;
+            const distance = distanceBetweenTwoPoints(userLocation.coordinates, kotaCoordinates);
+
+            if (nearestKota.length < 2) {
+                nearestKota.push({ kotaInProvinsi, distance });
+            } else {
+                nearestKota.sort((a, b) => a.distance - b.distance);
+                if (distance < nearestKota[1].distance) {
+                    nearestKota[1] = { kotaInProvinsi, distance };
+                }
+            }
+        });
+
+        let ambulanceProvidersIn2Kota = [];
+        for (const kota of nearestKota) {
+            try {
+                const ambulanceProvidersInKota = await getAllAmbulanceProvidersByKotaDB(kota.kotaInProvinsi.id);
+                ambulanceProvidersIn2Kota.push(...ambulanceProvidersInKota);
+            } catch (error) {
+                console.error(`Error fetching ambulanceprovider for kota ${kota.kotaInProvinsi.id}:`, error);
+            }
         }
-    })
 
-    // nearestProvinsi.forEach(provinsi => {
-    //     console.log(provinsi.provinsi.name);
-    //     console.log(provinsi.distance);
-    // })
-    let kotaIn2Provinsi = [];
-    for (const provinsi of nearestProvinsi) {
-        try {
-            const kotaInProvinsi = await findAllKotaByProvinsiIdDB(provinsi.provinsi.id);
-            // console.log(kotaInProvinsi);
-            kotaIn2Provinsi.push(...kotaInProvinsi);
-        } catch (error) {
-            console.error(`Error fetching kota for provinsi ${provinsi.provinsi.id}:`, error);
+        if (ambulanceProvidersIn2Kota.length === 0) {
+            throw new Error('No ambulance providers found in the database.');
         }
-    }
 
-    let nearestkota = [];
+        // Calculate distances and sort the providers
+        let ambulanceProvidersWithDistances = ambulanceProvidersIn2Kota.map(provider => {
+            const providerCoordinates = provider.location.coordinates;
+            const distance = distanceBetweenTwoPoints(userLocation.coordinates, providerCoordinates);
+            return { provider, distance };
+        });
 
-    // print all kota in 2 nearest provinsi
-    kotaIn2Provinsi.forEach(kotaInProvinsi => {
-        const kotaCoordinates = kotaInProvinsi.location.coordinates;
-        const distance = distanceBetweenTwoPoints(userLocation.coordinates, kotaCoordinates);
+        ambulanceProvidersWithDistances.sort((a, b) => a.distance - b.distance);
 
-        if (nearestkota.length < 2) {
-        nearestkota.push({kotaInProvinsi, distance});
-        } else {
-        nearestkota.sort((a, b) => a.distance - b.distance);
-        if (distance < nearestkota[1].distance) {
-            nearestkota[1] = {kotaInProvinsi, distance};
-        }
-        }
-    })
-
-    // nearestkota.forEach(kota => {
-    //     console.log(kota.kotaInProvinsi.name);
-    // })
-    let ambulanceproviderIn2Kota = [];
-    for (const kota of nearestkota) {
-        try {
-            const ambulanceproviderInKota = await getAllAmbulanceProvidersByKotaDB(kota.kotaInProvinsi.id);
-            // console.log(ambulanceproviderInKota);
-            ambulanceproviderIn2Kota.push(...ambulanceproviderInKota);
-        } catch (error) {
-            console.error(`Error fetching ambulanceprovider for kota ${kota.kotaInProvinsi.id}:`, error);
-        }
-    }
-
-    if (ambulanceproviderIn2Kota.length === 0) {
-        throw new Error('No ambulanceproviders found in the database.');
-    }
-
-    let nearestAmbulanceProvider = null;
-    let shortestDistance = Infinity;
-
-    ambulanceproviderIn2Kota.forEach(ambulanceprovider => {
-        const ambulanceproviderCoordinates = ambulanceprovider.location.coordinates;
-        // console.log(ambulanceprovider.ambulance_provider_name)
-        const distance = distanceBetweenTwoPoints(userLocation.coordinates, ambulanceproviderCoordinates);
-
-        if (distance < shortestDistance) {
-        shortestDistance = distance;
-        nearestAmbulanceProvider = ambulanceprovider;
-        }
-    });
-
-    return nearestAmbulanceProvider;
+        // Return the nearest 'n' ambulance providers
+        return ambulanceProvidersWithDistances.slice(0, n).map(item => item.provider);
     } catch (error) {
-    console.error('Error finding nearest ambulanceProvider:', error);
-    throw error;
+        console.error('Error finding nearest ambulance providers:', error);
+        throw error;
     }
 }
+
 
 const findNearestHospital = async (userLocation, class_list) => {
     try {
@@ -248,40 +239,43 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
         // cari 2 provinsi terdekat terus 2 kota terdekat baru 1 rumah sakit terdekat
 
         // search for nearest ambulance provider
-        const nearestAmbulanceProvider = await findNearestAmbulanceProvider(user_location);
-        console.log(nearestAmbulanceProvider.id);
+        const nearestAmbulanceProviders = await findNearestAmbulanceProviders(user_location, 1);
+        const nearestAmbulanceProvider = nearestAmbulanceProviders[0];
 
         // GANTI PAKE FCM KE DRIVER
         const allDriver = await FindAllDriverByAmbulanceProviderDB(nearestAmbulanceProvider.id);
-        allDriver.forEach(driver => {
-            // fcm driver
-            const message = {
-                notification: {
-                    title: 'Emergency Event',
-                    body: {
-                        emergency_event_id: created.id,
-                        user_id: user_id,
-                        user_location: user_location,
-                        emergency_type: emergency_type,
-                        number_of_patient: number_of_patient,
-                        title: title,
-                        descriptions: descriptions
-                    }
-                },
-                token: "cov6glZCR6eapv4KreRjN9:APA91bFhiH6pz-lY7rWPQZiwL2cfMVHMf8nXwcVfGtlWUfw5enbV6f7x1vgd68JKIdHHBeaaFz-CLK6UlnjoxPpPAZHRYUTOaeIXbOLj5TB75J0qghiB35QMZhT79PSHbho33SgPGuxg"
+
+        for (const driver of allDriver) {
+            try {
+                // fcm driver
+                const message = {
+                    data: {
+                        title: 'Emergency Event',
+                        body: JSON.stringify({
+                            emergency_event_id: created.id,
+                            user_id: user_id,
+                            user_location: user_location,
+                            emergency_type: emergency_type,
+                            number_of_patient: number_of_patient,
+                            title: title,
+                            descriptions: descriptions
+                        })
+                    },
+                    token: driver.fcm_token
+                };
+
+                const result = await sendNotification(message);
+
+                if (result.success) {
+                    console.log('Successfully sent message:', result.response);
+                } else {
+                    console.error('Error sending message:', result.error);
+                }
+            } catch (error) {
+                console.error('Unexpected error sending message:', error);
             }
+        }
 
-            console.log("sending fcm")
-
-            getMessaging().send(message)
-            .then((response) => {
-                console.log('Successfully sent message:', response);
-            })
-            .catch((error) => {
-                console.error('Error sending message:', error);
-            });
-
-        })
         
 
 

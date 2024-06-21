@@ -24,7 +24,7 @@ admin.initializeApp({
     })
 });
 
-const { getMessaging } = require('firebase-admin/messaging');
+const { sendNotification } = require('../src/helpers/sendnotification.helper');
 
 app.use(cors({
     origin: "*"
@@ -74,37 +74,35 @@ app.use(`/${prefix}/driveraccounts`, driverAccountsRoutes);
 const adminAccountsRoutes = require('./routes/adminaccounts.routes');
 app.use(`/${prefix}/niuniu/administrator`, adminAccountsRoutes);
 
-// // FCM endpoint
-// app.get(`/${prefix}/sendNotification`, (req, res) => {
-//     const message = {
-//         data: {
-//             title: 'Emergency Event',
-//             body: JSON.stringify({
-//                 emergency_event_id: 5,
-//                 name:"hasel"
-//             })
-//         },
-//         token: "cov6glZCR6eapv4KreRjN9:APA91bFhiH6pz-lY7rWPQZiwL2cfMVHMf8nXwcVfGtlWUfw5enbV6f7x1vgd68JKIdHHBeaaFz-CLK6UlnjoxPpPAZHRYUTOaeIXbOLj5TB75J0qghiB35QMZhT79PSHbho33SgPGuxg"
-//     };
+// FCM endpoint
+app.get(`/${prefix}/sendNotification`, async (req, res) => {
+    const message = {
+        data: {
+            title: 'Emergency Event',
+            body: JSON.stringify({
+                emergency_event_id: 5,
+                name:"hasel"
+            })
+        },
+        token: "cov6glZCR6eapv4KreRjN9:APA91bFhiH6pz-lY7rWPQZiwL2cfMVHMf8nXwcVfGtlWUfw5enbV6f7x1vgd68JKIdHHBeaaFz-CLK6UlnjoxPpPAZHRYUTOaeIXbOLj5TB75J0qghiB35QMZhT79PSHbho33SgPGuxg"
+    };
 
-//     console.log("Sending FCM");
+    console.log("Sending FCM");
 
-//     getMessaging().send(message)
-//     .then((response) => {
-//         console.log('Successfully sent message:', response);
-//         res.json({
-//             message: 'Successfully sent message',
-//             response: response
-//         });
-//     })
-//     .catch((error) => {
-//         console.error('Error sending message:', error);
-//         res.status(500).json({
-//             error: 'Error sending message',
-//             details: error.message
-//         });
-//     });
-// });
+    const result = await sendNotification(message);
+
+    if (result.success) {
+        res.json({
+            message: 'Successfully sent message',
+            response: result.response
+        });
+    } else {
+        res.status(500).json({
+            error: 'Error sending message',
+            details: result.error
+        });
+    }
+});
 
 // PORT
 const port = process.env.PORT || 4000;
