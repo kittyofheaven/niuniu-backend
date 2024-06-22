@@ -86,6 +86,19 @@ const updateDoneEmergencyEvent = async (req, res) => {
     }
 }
 
+const updateEmergencyEventDriverId = async (req, res) => {
+    try{
+        const driver_id = req.driverAccount.id;
+        const { emergency_event_id } = req.body;
+
+        // console.log(driver_id, emergency_event_id);
+
+        await emergencyEventsServices.updateEmergencyEventDriverId(emergency_event_id, driver_id, res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
 
 
 module.exports = {
@@ -96,5 +109,6 @@ module.exports = {
     getAllDriverEmergencyEvents,
     getAllDriverEmergencyEventsIsDone,
     getAllDriverEmergencyEventsIsNotDone,
+    updateEmergencyEventDriverId,
     updateDoneEmergencyEvent
 }

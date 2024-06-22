@@ -185,7 +185,7 @@ const updateHospitalIdEmergencyEventDB = async (id, hospital_id) => {
     }
 }
 
-const updateDriverIdEmergencyEventDB = async (id, driver_id) => {
+const updateEmergencyEventDriverIdDB = async (id, driver_id) => {
     try{
         return await emergencyEvents.update({
             driver_id
@@ -228,6 +228,6 @@ module.exports = {
     findEmergencyEventByHospitalDBIsDone,
     findEmergencyEventByHospitalDBIsNotDone,
     updateHospitalIdEmergencyEventDB,
-    updateDriverIdEmergencyEventDB,
+    updateEmergencyEventDriverIdDB,
     updateDoneEmergencyEventDB
 }

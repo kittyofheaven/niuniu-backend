@@ -7,9 +7,7 @@ const {
     findEmergencyEventByDriverDB,
     findEmergencyEventByDriverDBIsDone,
     findEmergencyEventByDriverDBIsNotDone,
-    findEmergencyEventByHospitalDB,
-    findEmergencyEventByHospitalDBIsDone,
-    findEmergencyEventByHospitalDBIsNotDone,
+    updateEmergencyEventDriverIdDB,
     updateDoneEmergencyEventDB
 } = require('../repositories/emergencyevents.repository');
 const {findAmbulanceProviderByIdDB, getAllAmbulanceProvidersDB, getAllAmbulanceProvidersByKotaDB} = require('../repositories/ambulanceproviders.repository');
@@ -451,6 +449,37 @@ const updateDoneEmergencyEvent = async (driver_id, emergency_event_id, res) => {
     }
 }
 
+const updateEmergencyEventDriverId = async (id, driver_id, res) => {
+    try{
+        if (!id || !driver_id){
+            throw new FieldEmptyError("All fields are required");
+        }
+
+        if (isNaN(id) || isNaN(driver_id)){
+            throw new CustomError("All fields must be a number", 400);
+        }
+
+        const emergencyEvent = await findEmergencyEventByIdDB(id);
+        console.log(emergencyEvent);
+
+        if(emergencyEvent == null){
+            throw new CustomError("Emergency event not found", 404);
+        }
+
+        if(emergencyEvent.driver_id != null){
+            throw new CustomError("Emergency event already has driver", 400);
+        }
+
+        const updated = await updateEmergencyEventDriverIdDB(id, driver_id);
+
+        const success = new SuccessResponse("Emergency event updated successfully", updated);
+        success.send200(res);
+    }
+    catch (error){
+        throw error;
+    }
+}
+
 module.exports = {
     createEmergencyEvent,
     getAllUserEmergencyEvents,
@@ -459,5 +488,6 @@ module.exports = {
     getAllDriverEmergencyEvents,
     getAllDriverEmergencyEventsIsDone,
     getAllDriverEmergencyEventsIsNotDone,
-    updateDoneEmergencyEvent
+    updateDoneEmergencyEvent,
+    updateEmergencyEventDriverId
 }

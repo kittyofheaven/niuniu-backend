@@ -7,7 +7,8 @@ const {
     getAllDriverEmergencyEvents,
     getAllDriverEmergencyEventsIsDone,
     getAllDriverEmergencyEventsIsNotDone,
-    updateDoneEmergencyEvent
+    updateDoneEmergencyEvent,
+    updateEmergencyEventDriverId,
 } = require('../controllers/emergencyevents.controller');
 const { verifyUserToken, verifyDriverToken } = require('../middleware/token.middleware');
 
@@ -18,6 +19,7 @@ router.get('/user/notdone',verifyUserToken, getAllUserEmergencyEventsIsNotDone);
 router.get('/driver',verifyDriverToken, getAllDriverEmergencyEvents);
 router.get('/driver/done',verifyDriverToken, getAllDriverEmergencyEventsIsDone);
 router.get('/driver/notdone',verifyDriverToken, getAllDriverEmergencyEventsIsNotDone);
-router.post('/update',verifyDriverToken, updateDoneEmergencyEvent);
+router.post('/update/done',verifyDriverToken, updateDoneEmergencyEvent);
+router.post('/update/driver',verifyDriverToken, updateEmergencyEventDriverId);
 
 module.exports = router;
