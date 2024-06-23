@@ -53,6 +53,19 @@ const findUserAccountByPhoneNumberDB = async (phone_number) => {
     }
 }
 
+const findUserAccountByIdDB = async (id) => {
+    try{
+        return await userAccounts.findOne({
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 const verifyUserAccountDB = async (email) => {
     try{
         return await userAccounts.update({
@@ -102,6 +115,7 @@ module.exports = {
     createUserAccountDB,
     findUserAccountByEmailDB,
     findUserAccountByPhoneNumberDB,
+    findUserAccountByIdDB,
     resetPasswordUserAccountDB,
     verifyUserAccountDB,
     insertFcmtokenDB,

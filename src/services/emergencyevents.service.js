@@ -15,6 +15,7 @@ const {distanceBetweenTwoPoints} = require('../helpers/distance.helper');
 const {findAllProvinsiDB} = require('../repositories/provinsi.repository');
 const {findAllKotaByProvinsiIdDB} = require('../repositories/kota.repository');
 const {FindAllDriverByAmbulanceProviderDB} = require('../repositories/driveraccounts.repository');
+const {findUserAccountByIdDB} = require('../repositories/useraccounts.repository');
 
 const {createHospitalDB, findHospitalByIdDB, findAllHospitalsByCityAndClassListDB} = require('../repositories/hospitals.repository');
 const {getHospitalClassification} = require('../helpers/hospitalclassifications.helper');
@@ -222,7 +223,9 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
         // console.log(nearestHospital.id);
 
         const created = await createEmergencyEventDB(user_id, user_location, driver_id, nearestHospital.id, emergency_type, number_of_patient, title, descriptions, is_done);
-        
+        const useraccount = findUserAccountByIdDB(user_id);
+        let name = useraccount.first_name + " " + useraccount.last_name;
+
         if(created.title == null){
             created.title = "No provided title";
         }
@@ -259,6 +262,7 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
                         body: JSON.stringify({
                             emergency_event_id: created.id,
                             user_id: user_id,
+                            user_name: name,
                             user_location: user_location,
                             emergency_type: emergency_type,
                             number_of_patient: number_of_patient,
