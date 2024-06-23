@@ -223,8 +223,10 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
         // console.log(nearestHospital.id);
 
         const created = await createEmergencyEventDB(user_id, user_location, driver_id, nearestHospital.id, emergency_type, number_of_patient, title, descriptions, is_done);
-        const useraccount = findUserAccountByIdDB(user_id);
+        const useraccount = await findUserAccountByIdDB(user_id);
+        // console.log(useraccount);
         let name = useraccount.first_name + " " + useraccount.last_name;
+        // console.log(name);
 
         if(created.title == null){
             created.title = "No provided title";
