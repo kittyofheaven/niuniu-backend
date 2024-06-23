@@ -220,7 +220,7 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
         // search nearest hospital
         // console.log(getHospitalClassification(emergency_type));
         const nearestHospital = await findNearestHospital(user_location, getHospitalClassification(emergency_type));
-        // console.log(nearestHospital.id);
+        console.log(nearestHospital.location);
 
         const created = await createEmergencyEventDB(user_id, user_location, driver_id, nearestHospital.id, emergency_type, number_of_patient, title, descriptions, is_done);
         const useraccount = await findUserAccountByIdDB(user_id);
@@ -266,6 +266,7 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
                             user_id: user_id,
                             user_name: name,
                             user_location: user_location,
+                            hospital_location: nearestHospital.location,
                             emergency_type: emergency_type,
                             number_of_patient: number_of_patient,
                             title: title,
