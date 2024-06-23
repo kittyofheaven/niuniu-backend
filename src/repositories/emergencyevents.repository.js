@@ -1,5 +1,7 @@
 const models = require('../models');
 const emergencyEvents = models.EmergencyEvents;
+const { UserAccounts, DriverAccounts, AmbulanceProviders, Hospitals } = require('../models');
+// const { EmergencyEvents, UserAccounts, DriverAccounts, AmbulanceProviders, Hospitals } = require('./models');
 
 // user_id: DataTypes.INTEGER,
 // user_location: DataTypes.GEOMETRY('POINT'),
@@ -39,90 +41,120 @@ const findEmergencyEventByIdDB = async (id) => {
 
 // USER
 const findEmergencyEventByUserDB = async (user_id) => {
-    try{
+    try {
         return await emergencyEvents.findAll({
             where: {
                 user_id
             },
+            include: [
+                { model: UserAccounts, as: 'user_emergencyEvents' },
+                { model: DriverAccounts, as: 'driver_emergencyEvents' },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: Hospitals, as: 'hospital_emergencyEvents' }
+            ],
             order: [['createdAt', 'DESC']]
         });
-    }
-    catch (error){
+    } catch (error) {
         console.log(error);
     }
 }
 
 const findEmergencyEventByUserDBIsDone = async (user_id) => {
-    try{
+    try {
         return await emergencyEvents.findAll({
             where: {
                 user_id,
                 is_done: true
             },
+            include: [
+                { model: UserAccounts, as: 'user_emergencyEvents' },
+                { model: DriverAccounts, as: 'driver_emergencyEvents' },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: Hospitals, as: 'hospital_emergencyEvents' }
+            ],
             order: [['createdAt', 'DESC']]
         });
-    }
-    catch (error){
+    } catch (error) {
         console.log(error);
     }
 }
 
 const findEmergencyEventByUserDBIsNotDone = async (user_id) => {
-    try{
+    try {
         return await emergencyEvents.findAll({
             where: {
                 user_id,
                 is_done: false
             },
+            include: [
+                { model: UserAccounts, as: 'user_emergencyEvents' },
+                { model: DriverAccounts, as: 'driver_emergencyEvents' },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: Hospitals, as: 'hospital_emergencyEvents' }
+            ],
             order: [['createdAt', 'DESC']]
         });
-    }
-    catch (error){
+    } catch (error) {
         console.log(error);
     }
 }
 
 // DRIVER
 const findEmergencyEventByDriverDB = async (driver_id) => {
-    try{
+    try {
         return await emergencyEvents.findAll({
             where: {
                 driver_id
             },
+            include: [
+                { model: UserAccounts, as: 'user_emergencyEvents' },
+                { model: DriverAccounts, as: 'driver_emergencyEvents' },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: Hospitals, as: 'hospital_emergencyEvents' }
+            ],
             order: [['createdAt', 'DESC']]
         });
-    }
-    catch (error){
+    } catch (error) {
         console.log(error);
     }
 }
 
 const findEmergencyEventByDriverDBIsDone = async (driver_id) => {
-    try{
+    try {
         return await emergencyEvents.findAll({
             where: {
                 driver_id,
                 is_done: true
             },
+            include: [
+                { model: UserAccounts, as: 'user_emergencyEvents' },
+                { model: DriverAccounts, as: 'driver_emergencyEvents' },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: Hospitals, as: 'hospital_emergencyEvents' }
+            ],
             order: [['createdAt', 'DESC']]
         });
-    }
-    catch (error){
+    } catch (error) {
         console.log(error);
     }
 }
 
 const findEmergencyEventByDriverDBIsNotDone = async (driver_id) => {
-    try{
+    try {
         return await emergencyEvents.findAll({
             where: {
                 driver_id,
                 is_done: false
             },
+            include: [
+                { model: UserAccounts, as: 'user_emergencyEvents' },
+                { model: DriverAccounts, as: 'driver_emergencyEvents' },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: Hospitals, as: 'hospital_emergencyEvents' }
+            ],
             order: [['createdAt', 'DESC']]
         });
-    }
-    catch (error){
+    } catch (error) {
         console.log(error);
     }
 }
