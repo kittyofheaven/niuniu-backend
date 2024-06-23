@@ -2,7 +2,7 @@ const { Server } = require("socket.io");
 const { authenticateHospitalSocket, authenticateDriverSocket, authenticateUserSocket } = require('../middleware/socketauth.middleware');
 const { updateHospitalIdEmergencyEventDB, updateDriverIdEmergencyEventDB, findEmergencyEventByIdDB} = require('../repositories/emergencyevents.repository');
 const { getTimeInUTCOffset } = require('../helpers/time.helper');
-
+const { findDriverAccountByIdDB } = require('../repositories/driveraccounts.repository');
 
 let io;
 
@@ -234,10 +234,14 @@ const initializeSocket = (server) => {
                     const driver_location = data.driver_location;
                     console.log(driver_location);
 
+                    const driverAccount = await findDriverAccountByIdDB(user_id);
+                    let driverName = driverAccount.first_name + " " + driverAccount.last_name;
+
                     io.to(`user${emergencyEvent.user_id}`).emit('tracking', {
                         status: 'success',
                         emergency_event_id: emergencyEventId,
                         driver_id: user_id,
+                        driver_name: driverName,
                         location: driver_location,
                         message: 'Driver location updated successfully'
                     });

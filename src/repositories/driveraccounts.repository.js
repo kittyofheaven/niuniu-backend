@@ -32,6 +32,19 @@ const findDriverAccountByEmailDB = async (email) => {
     }
 }
 
+const findDriverAccountByIdDB = async (id) => {
+    try{
+        return await driverAccounts.findOne({
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 const findDriverAccountByHospitalDB = async (ambulance_provider_id) => {
     try{
         return await driverAccounts.findAll({
@@ -108,6 +121,7 @@ module.exports = {
     createDriverAccountDB,
     findDriverAccountByEmailDB,
     findDriverAccountByHospitalDB,
+    findDriverAccountByIdDB,
     resetPasswordDriverAccountDB,
     insertFcmtokenDB,
     deleteFcmTokenDB,
