@@ -246,7 +246,14 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
         for (const driver of allDriver) {
             try {
                 // fcm driver
+
+                console.log(driver.fcm_token);
+
                 const message = {
+                    notification: {
+                        title: 'Emergency Event',
+                        body: 'Someone needs an ambulance, please accept the emergency event'
+                    },
                     data: {
                         title: 'Emergency Event',
                         body: JSON.stringify({
