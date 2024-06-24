@@ -6,39 +6,7 @@ const { start } = require('repl');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */
-    // await queryInterface.bulkInsert('Hospitals', [
-      // {
-      //   id: 1,     
-      //   hospital_name: 'RSUD Dr. Soetomo',
-      //   phone_number: '0315501078',
-      //   kelas: 'A',
-      //   location: Sequelize.fn('ST_GeomFromText', 'POINT(112.75806642569326 -7.26820381224195)'), // POINT(LONGITUDE, LATTITUDE) while on google maps its (LATTITUDE, LONGITUDE)
-      //   kota_id: 1,
-      //   createdAt: new Date(),
-      //   updatedAt: new Date()
-      // },
-      // {
-      //   id: 2,     
-      //   hospital_name: 'RSAL Dr. Ramelan',
-      //   phone_number: '0318438153',
-      //   kelas: 'A',
-      //   location: Sequelize.fn('ST_GeomFromText', 'POINT(112.7380681448837, -7.309706051468905)'), // POINT(LONGITUDE, LATTITUDE) while on google maps its (LATTITUDE, LONGITUDE)
-      //   kota_id: 1,
-      //   createdAt: new Date(),
-      //   updatedAt: new Date()
-      // }
-    // ]);
-
-    // POINT(LONGITUDE, LATTITUDE) while on google maps its (LATTITUDE, LONGITUDE)
+    // [LATITUDE, LONGITUDE]
     const filePath = path.join(__dirname, '../scraper/rs_surabaya_withlocation.json');
     const jsonData = fs.readFileSync(filePath, 'utf8');
     const hospitals = JSON.parse(jsonData);
@@ -51,7 +19,7 @@ module.exports = {
         hospital_name: hospital.nama_rs,
         phone_number: hospital.nomor_telp,
         kelas: hospital.kelas,
-        location: Sequelize.fn('ST_GeomFromText', `POINT(${hospital.lng} ${hospital.lat})`),
+        location: Sequelize.fn('ST_GeomFromText', `POINT(${hospital.lat} ${hospital.lng})`),
         kota_id: 1,
         createdAt: new Date(),
         updatedAt: new Date()
