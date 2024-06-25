@@ -72,6 +72,7 @@ const validateDriverAccount = async (email, password, fcm_token, res) => {
             "first_name": driver.first_name,
             "last_name": driver.last_name,
             "ambulance_provider_id": driver.ambulance_provider_id,
+            "ambulance_provider_name": driver.ambulance_provider_driverAccounts.ambulance_provider_name,
             "fcm_token": created_fcm_token,
             "token": token
         });

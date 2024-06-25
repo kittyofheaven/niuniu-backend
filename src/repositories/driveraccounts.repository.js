@@ -24,7 +24,13 @@ const findDriverAccountByEmailDB = async (email) => {
         return await driverAccounts.findOne({
             where: {
                 email
-            }
+            },
+            include: [
+                {
+                    model: models.AmbulanceProviders,
+                    as: 'ambulance_provider_driverAccounts'
+                }
+            ]
         });
     }
     catch (error){
