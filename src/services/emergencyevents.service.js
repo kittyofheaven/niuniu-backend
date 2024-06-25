@@ -9,7 +9,8 @@ const {
     findEmergencyEventByDriverDBIsNotDone,
     updateEmergencyEventDriverIdDB,
     updateDoneEmergencyEventDB,
-    updateEmergencyTypeEmergencyEventDB
+    updateEmergencyTypeEmergencyEventDB,
+    updateHospitalIdEmergencyEventDB
 } = require('../repositories/emergencyevents.repository');
 const { 
     findAmbulanceProviderByIdDB, 
@@ -19,7 +20,8 @@ const {
     findUserAccountByIdDB 
 } = require('../repositories/useraccounts.repository');
 const { 
-    FindAllDriverByAmbulanceProviderDB 
+    FindAllDriverByAmbulanceProviderDB, 
+    findDriverAccountByIdDB
 } = require('../repositories/driveraccounts.repository');
 const { 
     createHospitalDB, 
@@ -41,7 +43,7 @@ const {
 const { getIo } = require('../sockets');
 const { sendNotification } = require('../helpers/sendnotification.helper');
 
-const createEmergencyEvent = async (user_id, user_location, emergency_type, number_of_patient, title, descriptions, res) => {
+const createEmergencyEvent = async (user_id, user_location, number_of_patient, title, descriptions, res) => {
 
     const io = getIo();
     if (!io) {
@@ -50,7 +52,7 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
     }
 
     try{
-        if (!user_id || !user_location || !emergency_type){
+        if (!user_id || !user_location){
             throw new FieldEmptyError("All fields are required");
         }
 
@@ -58,6 +60,7 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
         
         driver_id = null;
         hospital_id = null;
+        emergency_type = null;
 
         const created = await createEmergencyEventDB(user_id, user_location, driver_id, hospital_id, emergency_type, number_of_patient, title, descriptions, is_done);
         const useraccount = await findUserAccountByIdDB(user_id);
@@ -236,17 +239,20 @@ const updateEmergencyEventDriverId = async (id, driver_id, res) => {
         }
 
         const emergencyEvent = await findEmergencyEventByIdDB(id);
-        console.log(emergencyEvent);
-
+        // console.log(emergencyEvent);
+        
         if(emergencyEvent == null){
             throw new CustomError("Emergency event not found", 404);
         }
-
+        
         if(emergencyEvent.driver_id != null){
             throw new CustomError("Emergency event already has driver", 400);
         }
 
-        const updated = await updateEmergencyEventDriverIdDB(id, driver_id);
+        const driver = await findDriverAccountByIdDB(driver_id);
+        let ambulance_provider_id = driver.ambulance_provider_id;
+
+        const updated = await updateEmergencyEventDriverIdDB(id, driver_id, ambulance_provider_id);
 
         const success = new SuccessResponse("Emergency event updated successfully", updated);
         success.send200(res);
@@ -288,6 +294,8 @@ const updateEmergencyTypeEmergencyEvent = async (driver_id, emergency_id, emerge
         const updated = await updateEmergencyTypeEmergencyEventDB(emergency_id, emergency_type);
 
         const nearestHospital = await findNearestHospital(user_location, getHospitalClassification(emergency_type));
+
+        await updateHospitalIdEmergencyEventDB(emergency_id, nearestHospital.id);
 
         if(useraccount.fcm_token != null){
             const message = {

@@ -223,10 +223,11 @@ const updateHospitalIdEmergencyEventDB = async (id, hospital_id) => {
     }
 }
 
-const updateEmergencyEventDriverIdDB = async (id, driver_id) => {
+const updateEmergencyEventDriverIdDB = async (id, driver_id, ambulance_provider_id) => {
     try{
         return await emergencyEvents.update({
-            driver_id
+            driver_id,
+            ambulance_provider_id
         }, {
             where: {
                 id
