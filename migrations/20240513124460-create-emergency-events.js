@@ -46,7 +46,7 @@ module.exports = {
         }
       },
       emergency_type: {
-        allowNull: false,
+        // allowNull: false,
         type: Sequelize.ENUM('MERAH', 'KUNING', 'HIJAU', 'PUTIH', 'HITAM')
       },
       number_of_patient: {
