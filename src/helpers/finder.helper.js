@@ -186,6 +186,7 @@ const findDriver = async (user_location, emergency_event_id) => {
     const interval = 1000;  // 1 second
 
     const emergencyEvent = await findEmergencyEventByIdDB(emergency_event_id);
+    let user_name = emergencyEvent.user_emergencyEvents.first_name + ' ' + emergencyEvent.user_emergencyEvents.last_name;
 
     try {
         while (true) {
@@ -227,6 +228,8 @@ const findDriver = async (user_location, emergency_event_id) => {
                 for (const driver of allDrivers) {
                     try {
                         // Send notification to driver
+
+
                         const message = {
                             notification: {
                                 title: 'Emergency Event',
@@ -236,6 +239,7 @@ const findDriver = async (user_location, emergency_event_id) => {
                                 title: 'Emergency Event',
                                 body: JSON.stringify({
                                     emergency_event_id: emergency_event_id,
+                                    user_name: user_name,
                                     user_location: user_location
                                 })
                             },
@@ -283,6 +287,7 @@ const findDriver = async (user_location, emergency_event_id) => {
                 title: 'Emergency Event',
                 body: JSON.stringify({
                     emergency_event_id: emergency_event_id,
+                    user_name: user_name,
                     user_location: user_location,
                     message: 'No drivers found for the emergency event',
                     error: `${error.message}`
