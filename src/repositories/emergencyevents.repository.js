@@ -31,7 +31,13 @@ const findEmergencyEventByIdDB = async (id) => {
         return await emergencyEvents.findOne({
             where: {
                 id
-            }
+            },
+            include: [
+                { model: UserAccounts, as: 'user_emergencyEvents' },
+                { model: DriverAccounts, as: 'driver_emergencyEvents' },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: Hospitals, as: 'hospital_emergencyEvents' }
+            ],
         });
     }
     catch (error){
@@ -247,6 +253,21 @@ const updateDoneEmergencyEventDB = async (id) => {
     }
 }
 
+const updateEmergencyTypeEmergencyEventDB = async (id, emergency_type) => {
+    try{
+        return await emergencyEvents.update({
+            emergency_type
+        }, {
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 module.exports = {
     createEmergencyEventDB,
     findEmergencyEventByIdDB,
@@ -261,5 +282,6 @@ module.exports = {
     findEmergencyEventByHospitalDBIsNotDone,
     updateHospitalIdEmergencyEventDB,
     updateEmergencyEventDriverIdDB,
-    updateDoneEmergencyEventDB
+    updateDoneEmergencyEventDB,
+    updateEmergencyTypeEmergencyEventDB
 }

@@ -1,4 +1,4 @@
-const {
+const { 
     createEmergencyEventDB,
     findEmergencyEventByIdDB,
     findEmergencyEventByUserDB,
@@ -8,196 +8,38 @@ const {
     findEmergencyEventByDriverDBIsDone,
     findEmergencyEventByDriverDBIsNotDone,
     updateEmergencyEventDriverIdDB,
-    updateDoneEmergencyEventDB
+    updateDoneEmergencyEventDB,
+    updateEmergencyTypeEmergencyEventDB
 } = require('../repositories/emergencyevents.repository');
-const {findAmbulanceProviderByIdDB, getAllAmbulanceProvidersDB, getAllAmbulanceProvidersByKotaDB} = require('../repositories/ambulanceproviders.repository');
-const {distanceBetweenTwoPoints} = require('../helpers/distance.helper');
-const {findAllProvinsiDB} = require('../repositories/provinsi.repository');
-const {findAllKotaByProvinsiIdDB} = require('../repositories/kota.repository');
-const {FindAllDriverByAmbulanceProviderDB} = require('../repositories/driveraccounts.repository');
-const {findUserAccountByIdDB} = require('../repositories/useraccounts.repository');
-
-const {createHospitalDB, findHospitalByIdDB, findAllHospitalsByCityAndClassListDB} = require('../repositories/hospitals.repository');
-const {getHospitalClassification} = require('../helpers/hospitalclassifications.helper');
-
-const SuccessResponse = require('../middleware/success.middleware')
-const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/error.middleware");
-const { all } = require('../routes/emergencyevents.routes');
-
+const { 
+    findAmbulanceProviderByIdDB, 
+    getAllAmbulanceProvidersDB 
+} = require('../repositories/ambulanceproviders.repository');
+const { 
+    findUserAccountByIdDB 
+} = require('../repositories/useraccounts.repository');
+const { 
+    FindAllDriverByAmbulanceProviderDB 
+} = require('../repositories/driveraccounts.repository');
+const { 
+    createHospitalDB, 
+    findHospitalByIdDB 
+} = require('../repositories/hospitals.repository');
+const { 
+    getHospitalClassification 
+} = require('../helpers/hospitalclassifications.helper');
+const { 
+    findDriver, 
+    findNearestHospital 
+} = require('../helpers/finder.helper');
+const SuccessResponse = require('../middleware/success.middleware');
+const { 
+    errorHandler, 
+    FieldEmptyError, 
+    CustomError 
+} = require("../middleware/error.middleware");
 const { getIo } = require('../sockets');
-const { getMessaging } = require('firebase-admin/messaging');
-
 const { sendNotification } = require('../helpers/sendnotification.helper');
-const { json } = require('sequelize');
-
-async function findNearestAmbulanceProviders(userLocation, n = 1) {
-    try {
-        // Assume getAllAmbulanceProvidersDB() is a function that fetches all ambulanceproviders from the database
-        const allProvinsi = await findAllProvinsiDB();
-        let nearestProvinsi = [];
-
-        // get two nearest provinsi
-        allProvinsi.forEach(provinsi => {
-            const provinsiCoordinates = provinsi.location.coordinates;
-            const distance = distanceBetweenTwoPoints(userLocation.coordinates, provinsiCoordinates);
-
-            if (nearestProvinsi.length < 2) {
-                nearestProvinsi.push({ provinsi, distance });
-            } else {
-                nearestProvinsi.sort((a, b) => a.distance - b.distance);
-                if (distance < nearestProvinsi[1].distance) {
-                    nearestProvinsi[1] = { provinsi, distance };
-                }
-            }
-        });
-
-        let kotaIn2Provinsi = [];
-        for (const provinsi of nearestProvinsi) {
-            try {
-                const kotaInProvinsi = await findAllKotaByProvinsiIdDB(provinsi.provinsi.id);
-                kotaIn2Provinsi.push(...kotaInProvinsi);
-            } catch (error) {
-                console.error(`Error fetching kota for provinsi ${provinsi.provinsi.id}:`, error);
-            }
-        }
-
-        let nearestKota = [];
-
-        // print all kota in 2 nearest provinsi
-        kotaIn2Provinsi.forEach(kotaInProvinsi => {
-            const kotaCoordinates = kotaInProvinsi.location.coordinates;
-            const distance = distanceBetweenTwoPoints(userLocation.coordinates, kotaCoordinates);
-
-            if (nearestKota.length < 2) {
-                nearestKota.push({ kotaInProvinsi, distance });
-            } else {
-                nearestKota.sort((a, b) => a.distance - b.distance);
-                if (distance < nearestKota[1].distance) {
-                    nearestKota[1] = { kotaInProvinsi, distance };
-                }
-            }
-        });
-
-        let ambulanceProvidersIn2Kota = [];
-        for (const kota of nearestKota) {
-            try {
-                const ambulanceProvidersInKota = await getAllAmbulanceProvidersByKotaDB(kota.kotaInProvinsi.id);
-                ambulanceProvidersIn2Kota.push(...ambulanceProvidersInKota);
-            } catch (error) {
-                console.error(`Error fetching ambulanceprovider for kota ${kota.kotaInProvinsi.id}:`, error);
-            }
-        }
-
-        if (ambulanceProvidersIn2Kota.length === 0) {
-            throw new Error('No ambulance providers found in the database.');
-        }
-
-        // Calculate distances and sort the providers
-        let ambulanceProvidersWithDistances = ambulanceProvidersIn2Kota.map(provider => {
-            const providerCoordinates = provider.location.coordinates;
-            const distance = distanceBetweenTwoPoints(userLocation.coordinates, providerCoordinates);
-            return { provider, distance };
-        });
-
-        ambulanceProvidersWithDistances.sort((a, b) => a.distance - b.distance);
-
-        // Return the nearest 'n' ambulance providers
-        return ambulanceProvidersWithDistances.slice(0, n).map(item => item.provider);
-    } catch (error) {
-        console.error('Error finding nearest ambulance providers:', error);
-        throw error;
-    }
-}
-
-
-const findNearestHospital = async (userLocation, class_list) => {
-    try {
-        const allProvinsi = await findAllProvinsiDB();
-        let nearestProvinsi = [];
-
-        // get two nearest provinsi
-        allProvinsi.forEach(provinsi => {
-            const provinsiCoordinates = provinsi.location.coordinates;
-            const distance = distanceBetweenTwoPoints(userLocation.coordinates, provinsiCoordinates);
-
-            if (nearestProvinsi.length < 2) {
-                nearestProvinsi.push({provinsi, distance});
-            } else {
-                nearestProvinsi.sort((a, b) => a.distance - b.distance);
-                if (distance < nearestProvinsi[1].distance) {
-                    nearestProvinsi[1] = {provinsi, distance};
-                }
-            }
-        })
-
-        let kotaIn2Provinsi = [];
-        for (const provinsi of nearestProvinsi) {
-            try {
-                const kotaInProvinsi = await findAllKotaByProvinsiIdDB(provinsi.provinsi.id);
-                // console.log(kotaInProvinsi);
-                kotaIn2Provinsi.push(...kotaInProvinsi);
-            } catch (error) {
-                console.error(`Error fetching kota for provinsi ${provinsi.provinsi.id}:`, error);
-            }
-        }
-
-        let nearestkota = [];
-
-        // print all kota in 2 nearest provinsi
-        kotaIn2Provinsi.forEach(kotaInProvinsi => {
-            const kotaCoordinates = kotaInProvinsi.location.coordinates;
-            const distance = distanceBetweenTwoPoints(userLocation.coordinates, kotaCoordinates);
-
-            if (nearestkota.length < 2) {
-                nearestkota.push({kotaInProvinsi, distance});
-            } else {
-                nearestkota.sort((a, b) => a.distance - b.distance);
-                if (distance < nearestkota[1].distance) {
-                    nearestkota[1] = {kotaInProvinsi, distance};
-                }
-            }
-        })
-
-        // nearestkota.forEach(kota => {
-        //     console.log(kota.kotaInProvinsi.name);
-        // })
-        let hospitalIn2Kota = [];
-        for (const kota of nearestkota) {
-            try {
-                // class_list = ['A', 'B', 'C', 'D', 'E'];
-                // console.log(class_list)
-                const hospitalInKota = await findAllHospitalsByCityAndClassListDB(kota.kotaInProvinsi.id, class_list);
-                // console.log(hospitalInKota);
-                hospitalIn2Kota.push(...hospitalInKota);
-            } catch (error) {
-                console.error(`Error fetching hospital for kota ${kota.kotaInProvinsi.id}:`, error);
-            }
-        }
-        
-        if (hospitalIn2Kota.length === 0) {
-            throw new Error('No hospitals found in the database.');
-        }
-
-        let nearestHospital = null;
-        let shortestDistance = Infinity;
-
-        hospitalIn2Kota.forEach(hospital => {
-            const hospitalCoordinates = hospital.location.coordinates;
-            // console.log(hospital.hospital_name, hospital.kelas)
-            const distance = distanceBetweenTwoPoints(userLocation.coordinates, hospitalCoordinates);
-
-            if (distance < shortestDistance) {
-                shortestDistance = distance;
-                nearestHospital = hospital;
-            }
-        });
-        return nearestHospital;
-    }
-    catch (error) {
-        console.error('Error finding nearest hospital:', error);
-        throw error;
-    }
-}
 
 const createEmergencyEvent = async (user_id, user_location, emergency_type, number_of_patient, title, descriptions, res) => {
 
@@ -217,12 +59,7 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
         driver_id = null;
         hospital_id = null;
 
-        // search nearest hospital
-        // console.log(getHospitalClassification(emergency_type));
-        const nearestHospital = await findNearestHospital(user_location, getHospitalClassification(emergency_type));
-        console.log(nearestHospital.location);
-
-        const created = await createEmergencyEventDB(user_id, user_location, driver_id, nearestHospital.id, emergency_type, number_of_patient, title, descriptions, is_done);
+        const created = await createEmergencyEventDB(user_id, user_location, driver_id, hospital_id, emergency_type, number_of_patient, title, descriptions, is_done);
         const useraccount = await findUserAccountByIdDB(user_id);
         // console.log(useraccount);
         let name = useraccount.first_name + " " + useraccount.last_name;
@@ -238,74 +75,12 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
 
         //LOGIKA PENENTUAN AMBULANCE PROVIDER ID DAN DRIVER ID.
 
-        // console.log(user_location.coordinates); //[longitude, latitude]
-        // cari 2 provinsi terdekat terus 2 kota terdekat baru 1 rumah sakit terdekat
-
-        // search for nearest ambulance provider
-        const nearestAmbulanceProviders = await findNearestAmbulanceProviders(user_location, 1);
-        const nearestAmbulanceProvider = nearestAmbulanceProviders[0];
-
-        // GANTI PAKE FCM KE DRIVER
-        const allDriver = await FindAllDriverByAmbulanceProviderDB(nearestAmbulanceProvider.id);
-
-        for (const driver of allDriver) {
-            try {
-                // fcm driver
-
-                console.log(driver.fcm_token);
-
-                const message = {
-                    notification: {
-                        title: 'Emergency Event',
-                        body: 'Someone needs an ambulance, please accept the emergency event'
-                    },
-                    data: {
-                        title: 'Emergency Event',
-                        body: JSON.stringify({
-                            emergency_event_id: created.id,
-                            user_id: user_id,
-                            user_name: name,
-                            user_location: user_location,
-                            hospital_location: nearestHospital.location,
-                            emergency_type: emergency_type,
-                            number_of_patient: number_of_patient,
-                            title: title,
-                            descriptions: descriptions
-                        })
-                    },
-                    token: driver.fcm_token
-                };
-
-                const result = await sendNotification(message);
-
-                if (result.success) {
-                    console.log('Successfully sent message:', result.response);
-                } else {
-                    console.error('Error sending message:', result.error);
-                }
-            } catch (error) {
-                console.error('Unexpected error sending message:', error);
-            }
-        }
-
-        
-
-
-        // io.to(`hospital${nearestHospital.id}`).emit("emergency", {
-        //     "emergency_event_id": created.id,
-        //     "user_id": user_id,
-        //     "user_location": user_location,
-        //     "emergency_type": emergency_type,
-        //     "number_of_patient": number_of_patient,
-        //     "title": title,
-        //     "descriptions": descriptions
-        // })
+        findDriver(user_location, created.id);
 
         const success = new SuccessResponse("Emergency event acknowledge", {
             "emergency_event_id": created.id,
             "user_id": user_id,
             "user_location": user_location,
-            "hospital_id": nearestHospital.id,
             "emergency_type": emergency_type,
             "number_of_patient": number_of_patient,
             "title": created.title,
@@ -314,19 +89,6 @@ const createEmergencyEvent = async (user_id, user_location, emergency_type, numb
             "message": "Emergency event acknowledge by server. Please wait for ambulance provider & driver to accept the emergency event. we will notify you when the event is accepted by hospital & driver from websocket.",
             "socket_event": "emergency"
         });
-
-        // const success = new SuccessResponse("Emergency event created successfully", {
-        //     "emergency_event_id": created.id,
-        //     "user_id": created.user_id,
-        //     "user_location": created.user_location,
-        //     "driver_id": created.driver_id,
-        //     "hospital_id": created.hospital_id,
-        //     "emergency_type": created.emergency_type,
-        //     "number_of_patient": created.number_of_patient,
-        //     "title": created.title,
-        //     "descriptions": created.descriptions,
-        //     "is_done": created.is_done
-        // });
 
         success.send201(res);
     } catch (error){
@@ -494,6 +256,93 @@ const updateEmergencyEventDriverId = async (id, driver_id, res) => {
     }
 }
 
+const updateEmergencyTypeEmergencyEvent = async (driver_id, emergency_id, emergency_type, res) => {
+    try{
+        if (!emergency_id || !emergency_type){
+            throw new FieldEmptyError("All fields are required");
+        }
+
+        if (isNaN(emergency_id)){
+            throw new CustomError("All fields must be a number", 400);
+        }
+
+        const emergencyEvent = await findEmergencyEventByIdDB(emergency_id);
+
+        if(emergencyEvent == null){
+            throw new CustomError("Emergency event not found", 404);
+        }
+
+        if(emergencyEvent.driver_id != driver_id){
+            throw new CustomError("Driver is not authorized to update this emergency event", 401);
+        }
+
+        if(emergencyEvent.is_done == true){
+            throw new CustomError("Emergency event is already done", 400);
+        }
+        
+        const user_id = emergencyEvent.user_id;
+        const user_location = emergencyEvent.user_location;
+        const useraccount = await findUserAccountByIdDB(user_id);
+        let user_name = useraccount.first_name + " " + useraccount.last_name;
+
+        const updated = await updateEmergencyTypeEmergencyEventDB(emergency_id, emergency_type);
+
+        const nearestHospital = await findNearestHospital(user_location, getHospitalClassification(emergency_type));
+
+        if(useraccount.fcm_token != null){
+            const message = {
+                notification: {
+                    title: 'Hospital Found',
+                    body: 'Hospital has been found, please proceed to the hospital for further action'
+                },
+                data: {
+                    title: 'Hospital Found',
+                    body: JSON.stringify({
+                        emergency_event_id: emergency_id,
+                        user_id: user_id,
+                        user_name: user_name,
+                        user_location: user_location,
+                        hospital_location: nearestHospital.location,
+                        emergency_type: emergency_type,
+                        number_of_patient: emergencyEvent.number_of_patient,
+                        title: emergencyEvent.title,
+                        descriptions: emergencyEvent.descriptions
+                    })
+                },
+                token: useraccount.fcm_token
+            };
+    
+            const result = await sendNotification(message);
+            if (result.success) {
+                console.log('Successfully sent message:', result.response);
+            } else {
+                console.error('Error sending message:', result.error);
+            }
+        }
+
+        const response = {
+            "emergency_event_id": emergency_id,
+            "user_id": user_id,
+            "user_name": user_name,
+            "user_location": user_location,
+            "hospital_location": nearestHospital.location,
+            "emergency_type": emergency_type,
+            "number_of_patient": emergencyEvent.number_of_patient,
+            "title": emergencyEvent.title,
+            "descriptions": emergencyEvent.descriptions,
+            "is_done": emergencyEvent.is_done,
+            "message": "Emergency event updated successfully. Hospital has been found, please proceed to the hospital for further action",
+            "updated": updated
+        }
+
+        const success = new SuccessResponse("Emergency event updated successfully", response);
+        success.send200(res);
+    }
+    catch (error){
+        throw error;
+    }
+}
+
 module.exports = {
     createEmergencyEvent,
     getAllUserEmergencyEvents,
@@ -503,5 +352,6 @@ module.exports = {
     getAllDriverEmergencyEventsIsDone,
     getAllDriverEmergencyEventsIsNotDone,
     updateDoneEmergencyEvent,
-    updateEmergencyEventDriverId
+    updateEmergencyEventDriverId,
+    updateEmergencyTypeEmergencyEvent
 }
