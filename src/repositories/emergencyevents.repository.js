@@ -33,9 +33,9 @@ const findEmergencyEventByIdDB = async (id) => {
                 id
             },
             include: [
-                { model: UserAccounts, as: 'user_emergencyEvents' },
-                { model: DriverAccounts, as: 'driver_emergencyEvents' },
-                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: UserAccounts, as: 'user_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: DriverAccounts, as: 'driver_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents', attributes: { exclude: ['password'] } },
                 { model: Hospitals, as: 'hospital_emergencyEvents' }
             ],
         });
@@ -53,9 +53,9 @@ const findEmergencyEventByUserDB = async (user_id) => {
                 user_id
             },
             include: [
-                { model: UserAccounts, as: 'user_emergencyEvents' },
-                { model: DriverAccounts, as: 'driver_emergencyEvents' },
-                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: UserAccounts, as: 'user_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: DriverAccounts, as: 'driver_emergencyEvents', attributes: { exclude: ['password'] }, attributes: { exclude: ['password'] }, attributes: { exclude: ['password'] }, attributes: { exclude: ['password'] } },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents', attributes: { exclude: ['password'] } },
                 { model: Hospitals, as: 'hospital_emergencyEvents' }
             ],
             order: [['createdAt', 'DESC']]
@@ -73,9 +73,9 @@ const findEmergencyEventByUserDBIsDone = async (user_id) => {
                 is_done: true
             },
             include: [
-                { model: UserAccounts, as: 'user_emergencyEvents' },
-                { model: DriverAccounts, as: 'driver_emergencyEvents' },
-                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: UserAccounts, as: 'user_emergencyEvents', attributes: { exclude: ['password'] }, attributes: { exclude: ['password'] }, attributes: { exclude: ['password'] } },
+                { model: DriverAccounts, as: 'driver_emergencyEvents', attributes: { exclude: ['password'] }, attributes: { exclude: ['password'] }, attributes: { exclude: ['password'] } },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents', attributes: { exclude: ['password'] } },
                 { model: Hospitals, as: 'hospital_emergencyEvents' }
             ],
             order: [['createdAt', 'DESC']]
@@ -93,9 +93,9 @@ const findEmergencyEventByUserDBIsNotDone = async (user_id) => {
                 is_done: false
             },
             include: [
-                { model: UserAccounts, as: 'user_emergencyEvents' },
-                { model: DriverAccounts, as: 'driver_emergencyEvents' },
-                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: UserAccounts, as: 'user_emergencyEvents', attributes: { exclude: ['password'] }, attributes: { exclude: ['password'] } },
+                { model: DriverAccounts, as: 'driver_emergencyEvents', attributes: { exclude: ['password'] }, attributes: { exclude: ['password'] } },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents', attributes: { exclude: ['password'] } },
                 { model: Hospitals, as: 'hospital_emergencyEvents' }
             ],
             order: [['createdAt', 'DESC']]
@@ -113,9 +113,9 @@ const findEmergencyEventByDriverDB = async (driver_id) => {
                 driver_id
             },
             include: [
-                { model: UserAccounts, as: 'user_emergencyEvents' },
-                { model: DriverAccounts, as: 'driver_emergencyEvents' },
-                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: UserAccounts, as: 'user_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: DriverAccounts, as: 'driver_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents', attributes: { exclude: ['password'] } },
                 { model: Hospitals, as: 'hospital_emergencyEvents' }
             ],
             order: [['createdAt', 'DESC']]
@@ -133,9 +133,9 @@ const findEmergencyEventByDriverDBIsDone = async (driver_id) => {
                 is_done: true
             },
             include: [
-                { model: UserAccounts, as: 'user_emergencyEvents' },
-                { model: DriverAccounts, as: 'driver_emergencyEvents' },
-                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: UserAccounts, as: 'user_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: DriverAccounts, as: 'driver_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents', attributes: { exclude: ['password'] } },
                 { model: Hospitals, as: 'hospital_emergencyEvents' }
             ],
             order: [['createdAt', 'DESC']]
@@ -153,9 +153,9 @@ const findEmergencyEventByDriverDBIsNotDone = async (driver_id) => {
                 is_done: false
             },
             include: [
-                { model: UserAccounts, as: 'user_emergencyEvents' },
-                { model: DriverAccounts, as: 'driver_emergencyEvents' },
-                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents' },
+                { model: UserAccounts, as: 'user_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: DriverAccounts, as: 'driver_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: AmbulanceProviders, as: 'ambulance_provider_emergencyEvents', attributes: { exclude: ['password'] } },
                 { model: Hospitals, as: 'hospital_emergencyEvents' }
             ],
             order: [['createdAt', 'DESC']]
