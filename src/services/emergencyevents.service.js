@@ -350,6 +350,7 @@ const updateEmergencyTypeEmergencyEvent = async (driver_id, emergency_id, emerge
                         user_id: user_id,
                         user_name: user_name,
                         user_location: user_location,
+                        hospital_name: nearestHospital.hospital_name,
                         hospital_location: nearestHospital.location,
                         emergency_type: emergency_type,
                         number_of_patient: emergencyEvent.number_of_patient,
