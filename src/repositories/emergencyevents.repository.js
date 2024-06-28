@@ -254,6 +254,22 @@ const updateDoneEmergencyEventDB = async (id) => {
     }
 }
 
+const updateCancelEmergencyEventDB = async (id) => {
+    try{
+        return await emergencyEvents.update({
+            is_canceled: true
+        }, {
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+
+}
+
 const updateEmergencyTypeEmergencyEventDB = async (id, emergency_type) => {
     try{
         return await emergencyEvents.update({
@@ -284,5 +300,6 @@ module.exports = {
     updateHospitalIdEmergencyEventDB,
     updateEmergencyEventDriverIdDB,
     updateDoneEmergencyEventDB,
+    updateCancelEmergencyEventDB,
     updateEmergencyTypeEmergencyEventDB
 }

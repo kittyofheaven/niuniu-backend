@@ -2,7 +2,7 @@ const { findAllProvinsiDB } = require('../repositories/provinsi.repository');
 const { findAllKotaByProvinsiIdDB } = require('../repositories/kota.repository');
 const { getAllAmbulanceProvidersByKotaDB } = require('../repositories/ambulanceproviders.repository');
 const { findAllHospitalsByCityAndClassListDB } = require('../repositories/hospitals.repository');
-const { findEmergencyEventByIdDB } = require('../repositories/emergencyevents.repository');
+const { findEmergencyEventByIdDB, updateCancelEmergencyEventDB } = require('../repositories/emergencyevents.repository');
 const { distanceBetweenTwoPoints, distanceBetweenTwoPointsInKm } = require('../helpers/distance.helper');
 const { sendNotification } = require('../helpers/sendnotification.helper');
 const { FindAllDriverByAmbulanceProviderDB } = require('../repositories/driveraccounts.repository');
@@ -304,7 +304,8 @@ const findDriver = async (user_location, emergency_event_id) => {
         } catch (notificationError) {
             console.error('Error sending notification to user:', notificationError);
         }
-
+        // emergencyEvent is_cancelled jadiin true;
+        updateCancelEmergencyEventDB(emergency_event_id);
         console.error('Error finding nearest driver:', error);
         // throw error; // Final error handling if no drivers are found after all attempts
     }

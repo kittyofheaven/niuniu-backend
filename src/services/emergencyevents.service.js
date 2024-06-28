@@ -206,6 +206,10 @@ const updateDoneEmergencyEvent = async (driver_id, emergency_event_id, res) => {
             throw new CustomError("Emergency event not found", 404);
         }
 
+        if(emergencyEvent.is_canceled == true){
+            throw new CustomError("Emergency event is already canceled", 400);
+        }
+
         if(emergencyEvent.driver_id != driver_id){
             throw new CustomError("Driver is not authorized to update this emergency event", 401);
         }
@@ -245,6 +249,10 @@ const updateEmergencyEventDriverId = async (id, driver_id, res) => {
             throw new CustomError("Emergency event not found", 404);
         }
         
+        if(emergencyEvent.is_canceled == true){
+            throw new CustomError("Emergency event is already canceled", 400);
+        }
+
         if(emergencyEvent.driver_id != null){
             throw new CustomError("Emergency event already has driver", 400);
         }
