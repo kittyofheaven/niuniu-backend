@@ -249,12 +249,15 @@ const updateEmergencyEventDriverId = async (id, driver_id, res) => {
             throw new CustomError("Emergency event already has driver", 400);
         }
 
-        const driver = emergencyEvent.driver_emergencyEvents
+        const driver = await findDriverAccountByIdDB(driver_id);
         let ambulance_provider_id = driver.ambulance_provider_id;
+        // console.log(ambulance_provider_id);
 
         const updated = await updateEmergencyEventDriverIdDB(id, driver_id, ambulance_provider_id);
         // send fcm
         const user = emergencyEvent.user_emergencyEvents;
+        const user_fcm_token = user.fcm_token;
+
         const message = {
             notification: {
                 title: 'Driver Found',
@@ -279,12 +282,16 @@ const updateEmergencyEventDriverId = async (id, driver_id, res) => {
             token: user_fcm_token
         };
         
-        const result = await sendNotification(message);
-        if (result.success) {
-            console.log('Successfully sent message:', result.response);
-        }
-        else {
-            console.error('Error sending message:', result.error);
+        try{
+            const result = await sendNotification(message);
+            if (result.success) {
+                console.log('Successfully sent message:', result.response);
+            }
+            else {
+                console.error('Error sending message:', result.error);
+            }
+        } catch (error){
+            console.error('Error sending message:', error);
         }
 
         const success = new SuccessResponse("Emergency event updated successfully", updated);
