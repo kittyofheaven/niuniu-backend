@@ -280,6 +280,7 @@ const updateEmergencyEventDriverId = async (id, driver_id, res) => {
                     user_location: emergencyEvent.user_location,
                     driver_id: driver_id,
                     driver_name: driver.first_name + " " + driver.last_name,
+                    driver_phone_number: driver.phone_number,
                     ambulance_provider_id: ambulance_provider_id,
                     emergency_type: emergencyEvent.emergency_type,
                     number_of_patient: emergencyEvent.number_of_patient,
