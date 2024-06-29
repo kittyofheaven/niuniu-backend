@@ -11,7 +11,6 @@ const { Server } = require("socket.io");
 
 // Firebase Admin Initialization
 const admin = require("firebase-admin");
-const serviceAccount = require("../niuniu-firebase-firebase-adminsdk-rdobr-d3097408c7.json");
 
 dotenv.config(); // Load environment variables from .env file
 
