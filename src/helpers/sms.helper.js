@@ -1,6 +1,8 @@
 const axios = require('axios');
 const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/error.middleware");
 const webSmsToken = process.env.SECRET_WEBSMS_TOKEN;
+const goSmsUsername = process.env.SECRET_GOSMS_USERNAME;
+const goSmsPassword = process.env.SECRET_GOSMS_PASSWORD;
 const bcrypt = require('bcrypt');
 
 const { createUserOtpDB, verifyUserOtpDB } = require('../repositories/userotp.repository');
@@ -26,10 +28,10 @@ const sendOTP = async (phone_number) => {
     // https://websms.co.id/api/smsgateway-otp?token=[token]&to=[to]&msg=[msg]
 
     // console.log(phone_number)
+    // const url = `https://websms.co.id/api/smsgateway-otp?token=${webSmsToken}&to=${phone_number}&msg=${encodedMessage}`;
+    const url = `http://secure.gosmsgateway.com/otp-trial/api/Send.php?username=${goSmsUsername}&mobile=${phone_number}&message=${message}&password=${goSmsPassword}`
 
-    const url = `https://websms.co.id/api/smsgateway-otp?token=${webSmsToken}&to=${phone_number}&msg=${encodedMessage}`;
-
-    // console.log(url);
+    console.log(url);
 
     try {
         const response = await axios.get(url, {
@@ -38,9 +40,9 @@ const sendOTP = async (phone_number) => {
             }
         });
     
-        // console.log(response.data); // Jika perlu, tampilkan respons dari server
+        // console.log(response); // Jika perlu, tampilkan respons dari server
 
-        if (response.data.status !== 'success') {
+        if (response.status !== 200) {
             throw new Error('Failed to send verification code');
         }
 
