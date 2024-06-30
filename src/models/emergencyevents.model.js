@@ -37,7 +37,8 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     descriptions: DataTypes.STRING,
     is_done: DataTypes.BOOLEAN,
-    is_canceled: DataTypes.BOOLEAN
+    is_canceled: DataTypes.BOOLEAN,
+    rating: DataTypes.ENUM('1', '2', '3', '4', '5')
   }, {
     sequelize,
     modelName: 'EmergencyEvents',

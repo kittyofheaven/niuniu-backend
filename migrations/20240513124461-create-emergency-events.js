@@ -67,6 +67,10 @@ module.exports = {
         defaultValue: false,
         type: Sequelize.BOOLEAN
       },
+      rating: {
+        defaultValue: null,
+        type: Sequelize.ENUM('1', '2', '3', '4', '5')
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

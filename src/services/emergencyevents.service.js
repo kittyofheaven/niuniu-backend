@@ -10,7 +10,8 @@ const {
     updateEmergencyEventDriverIdDB,
     updateDoneEmergencyEventDB,
     updateEmergencyTypeEmergencyEventDB,
-    updateHospitalIdEmergencyEventDB
+    updateHospitalIdEmergencyEventDB,
+    updateRatingEmergencyEventDB
 } = require('../repositories/emergencyevents.repository');
 const { 
     findAmbulanceProviderByIdDB, 
@@ -403,6 +404,41 @@ const updateEmergencyTypeEmergencyEvent = async (driver_id, emergency_id, emerge
     }
 }
 
+const updateRatingEmergencyEvent = async (user_id, emergency_event_id, rating, res) => {
+    try{
+        if (!emergency_event_id || !rating){
+            throw new FieldEmptyError("All fields are required");
+        }
+
+        if (isNaN(emergency_event_id) || isNaN(rating)){
+            throw new CustomError("All fields must be a number", 400);
+        }
+
+        const emergencyEvent = await findEmergencyEventByIdDB(emergency_event_id);
+
+        if(emergencyEvent == null){
+            throw new CustomError("Emergency event not found", 404);
+        }
+
+        if (emergencyEvent.user_id != user_id){
+            throw new CustomError("User is not authorized to update this emergency event", 401);
+        }
+        
+        if(emergencyEvent.is_done == false){
+            throw new CustomError("Emergency event is not done yet", 400);
+        }
+
+        const updated = await updateRatingEmergencyEventDB(emergency_event_id, rating);
+
+        const success = new SuccessResponse("Rating updated successfully", updated);
+        success.send200(res);
+    }
+    catch (error){
+        throw error;
+    }
+
+}
+
 module.exports = {
     createEmergencyEvent,
     getAllUserEmergencyEvents,
@@ -413,5 +449,6 @@ module.exports = {
     getAllDriverEmergencyEventsIsNotDone,
     updateDoneEmergencyEvent,
     updateEmergencyEventDriverId,
-    updateEmergencyTypeEmergencyEvent
+    updateEmergencyTypeEmergencyEvent,
+    updateRatingEmergencyEvent
 }
