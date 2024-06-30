@@ -187,6 +187,8 @@ const findDriver = async (user_location, emergency_event_id) => {
 
     const emergencyEvent = await findEmergencyEventByIdDB(emergency_event_id);
     let user_name = emergencyEvent.user_emergencyEvents.first_name + ' ' + emergencyEvent.user_emergencyEvents.last_name;
+    // console.log('User name:', user_name);
+    // console.log(emergencyEvent.user_emergencyEvents.fcm_token);
 
     try {
         while (true) {
@@ -210,7 +212,7 @@ const findDriver = async (user_location, emergency_event_id) => {
                             title: 'Emergency Event',
                             body: 'No nearby ambulance providers within 10km.'
                         },
-                        token: emergencyEvent.user_fcm_token
+                        token: emergencyEvent.user_emergencyEvents.fcm_token
                     };
                     console.log('No nearby ambulance providers within 10km.');
                     await sendNotification(message);
@@ -293,7 +295,7 @@ const findDriver = async (user_location, emergency_event_id) => {
                     error: `${error.message}`
                 })
             },
-            token: emergencyEvent.user_fcm_token
+            token: emergencyEvent.user_emergencyEvents.fcm_token
         };
 
         console.log(message)
