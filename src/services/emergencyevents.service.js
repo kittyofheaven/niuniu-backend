@@ -22,7 +22,8 @@ const {
 } = require('../repositories/useraccounts.repository');
 const { 
     FindAllDriverByAmbulanceProviderDB, 
-    findDriverAccountByIdDB
+    findDriverAccountByIdDB,
+    updateIsOccupiedDriverDB
 } = require('../repositories/driveraccounts.repository');
 const { 
     createHospitalDB, 
@@ -215,6 +216,8 @@ const updateDoneEmergencyEvent = async (driver_id, emergency_event_id, res) => {
             throw new CustomError("Driver is not authorized to update this emergency event", 401);
         }
 
+        updateIsOccupiedDriverDB(driver_id, 0)
+
         if(emergencyEvent.is_done == true){
             throw new CustomError("Emergency event is already done", 400);
         }
@@ -258,6 +261,7 @@ const updateEmergencyEventDriverId = async (id, driver_id, res) => {
             throw new CustomError("Emergency event already has driver", 400);
         }
 
+        updateIsOccupiedDriverDB(driver_id, 1)
         const driver = await findDriverAccountByIdDB(driver_id);
         let ambulance_provider_id = driver.ambulance_provider_id;
         // console.log(ambulance_provider_id);

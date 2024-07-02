@@ -123,6 +123,21 @@ const FindAllDriverByAmbulanceProviderDB = async (ambulance_provider_id) => {
     }
 }
 
+const updateIsOccupiedDriverDB = async (id, is_occupied) => {
+    try{
+        return await driverAccounts.update({
+            is_occupied
+        }, {
+            where: {
+                id
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 module.exports = {
     createDriverAccountDB,
     findDriverAccountByEmailDB,
@@ -131,5 +146,6 @@ module.exports = {
     resetPasswordDriverAccountDB,
     insertFcmtokenDB,
     deleteFcmTokenDB,
-    FindAllDriverByAmbulanceProviderDB
+    FindAllDriverByAmbulanceProviderDB,
+    updateIsOccupiedDriverDB
 }

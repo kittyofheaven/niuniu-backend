@@ -55,10 +55,45 @@ const logoutUserAccount = async (req, res) => {
     }
 }
 
+const getUserAccountById = async (req, res) => {
+    try{
+        const user_id = req.userAccount.id;
+        await accountServices.getUserAccountById(user_id, res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
+const changeUserPassword = async (req, res) => {
+    try{
+        const user_id = req.userAccount.id;
+        const { old_password, new_password } = req.body;
+        if (!old_password || !new_password){
+            throw new FieldEmptyError('Old password or new password is empty');
+        }
+        await accountServices.changeUserPassword(user_id, old_password, new_password, res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
+const updateUserInformation = async (req, res) => {
+    try{
+        const user_id = req.userAccount.id;
+        const { email, phone_number, first_name, last_name } = req.body;
+        await accountServices.updateUserInformation(user_id, email, phone_number, first_name, last_name, res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
 module.exports = {
     createUserAccount,
     verifyUserAccountOTP,
     resendUserAccountOTP,
     validateUserAccount,
-    logoutUserAccount
+    logoutUserAccount,
+    getUserAccountById,
+    changeUserPassword,
+    updateUserInformation
 }

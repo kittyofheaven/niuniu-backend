@@ -13,7 +13,7 @@ const hospitalClassification = {
     [EmergencyLevel.KUNING]: ['A', 'B', 'C', 'D'],
     [EmergencyLevel.HIJAU]: ['A', 'B', 'C', 'D'],
     [EmergencyLevel.PUTIH]: ['A', 'B', 'C', 'D', 'E'],
-    [EmergencyLevel.HITAM]: []
+    [EmergencyLevel.HITAM]: ['A', 'B', 'C', 'D', 'E']
 };
 
 // Fungsi untuk mendapatkan klasifikasi rumah sakit

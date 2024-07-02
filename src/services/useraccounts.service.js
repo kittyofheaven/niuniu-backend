@@ -1,4 +1,14 @@
-const { createUserAccountDB, findUserAccountByEmailDB, findUserAccountByPhoneNumberDB, resetPasswordUserAccountDB, verifyUserAccountDB, insertFcmtokenDB, deleteFcmTokenDB } = require ('../repositories/useraccounts.repository')
+const { createUserAccountDB, 
+        findUserAccountByEmailDB, 
+        findUserAccountByPhoneNumberDB, 
+        resetPasswordUserAccountDB,
+        resetPasswordUserAccountByIdDB, 
+        verifyUserAccountDB,
+        deverifyUserAccountDB, 
+        insertFcmtokenDB, 
+        deleteFcmTokenDB, 
+        findUserAccountByIdDB, 
+        updateUserInformationDB } = require ('../repositories/useraccounts.repository')
 const SuccessResponse = require('../middleware/success.middleware')
 const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/error.middleware");
 const bcrypt = require('bcrypt');
@@ -163,11 +173,111 @@ const logoutUserAccount = async (user_id, res) => {
     }
 }
 
+const getUserAccountById = async (user_id, res) => {
+    try {
+        const user = await findUserAccountByIdDB(user_id);
+
+        if (!user) {
+            throw new CustomError("User account not found", 404);
+        }
+
+        const success = new SuccessResponse("User account found", {
+            "user_id": user.id,
+            "email": user.email,
+            "phone_number": user.phone_number,
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        });
+
+        success.send200(res);
+    } catch (error) {
+        errorHandler(error, res);
+    }
+}
+
+const changeUserPassword = async (user_id, old_password, new_password, res) => {
+    try {
+        if (!old_password || !new_password) {
+            throw new FieldEmptyError("All fields are required");
+        }
+
+        const user = await findUserAccountByIdDB(user_id);
+
+        if (!user) {
+            throw new CustomError("User account not found", 404);
+        }
+
+        const validPassword = await bcrypt.compare(old_password, user.password);
+        if (!validPassword) {
+            throw new CustomError("Invalid password", 401);
+        }
+
+        if (new_password.length < 8) {
+            throw new CustomError("New password must be at least 8 characters", 400);
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(new_password, salt);
+
+        await resetPasswordUserAccountByIdDB(user_id, hashedPassword);
+
+        const success = new SuccessResponse("Password changed successfully");
+        success.send200(res);
+    } catch (error) {
+        errorHandler(error, res);
+    }
+}
+
+const updateUserInformation = async (user_id, email, phone_number, first_name, last_name, res) => {
+    try {
+        const user = await findUserAccountByIdDB(user_id);
+
+        if (!user) {
+            throw new CustomError("User account not found", 404);
+        }
+
+        let newEmail = email !== undefined ? email : user.email;
+        let newPhoneNumber = phone_number !== undefined ? phone_number : user.phone_number;
+
+        if (email !== undefined && email !== user.email) {
+            if (await findUserAccountByEmailDB(email)) {
+                throw new CustomError("Email already registered", 409);
+            }
+        }
+        
+        if (phone_number !== undefined) {
+            if (phone_number.length < 10 || phone_number.length > 13) {
+                throw new CustomError("Phone number must be between 10 to 13 characters", 400);
+            }
+
+            if (phone_number !== user.phone_number) {
+                if (await findUserAccountByPhoneNumberDB(phone_number)) {
+                    throw new CustomError("Phone number already registered", 409);
+                }
+                await deverifyUserAccountDB(user_id);
+                await sendOTP(phone_number);
+            }
+        }
+
+        const newFirstName = first_name !== undefined ? first_name : user.first_name;
+        const newLastName = last_name !== undefined ? last_name : user.last_name;
+
+        await updateUserInformationDB(user_id, newEmail, newPhoneNumber, newFirstName, newLastName);
+
+        const success = new SuccessResponse("User information updated successfully");
+        success.send200(res);
+    } catch (error) {
+        errorHandler(error, res);
+    }
+}
 
 module.exports = {
     createUserAccount,
     verifyUserAccountOTP,
     resendUserAccountOTP,
     validateUserAccount,
-    logoutUserAccount
+    logoutUserAccount,
+    getUserAccountById,
+    changeUserPassword,
+    updateUserInformation
 }

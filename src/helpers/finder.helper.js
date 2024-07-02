@@ -231,6 +231,10 @@ const findDriver = async (user_location, emergency_event_id) => {
                     try {
                         // Send notification to driver
 
+                        if (driver.is_occupied) {
+                            console.log(`Driver ${driver.id} is occupied, skipping...`);
+                            continue;
+                        }
 
                         const message = {
                             notification: {
