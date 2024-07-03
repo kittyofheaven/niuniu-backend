@@ -1,12 +1,13 @@
-const { createAmbulanceProviderDB, findAmbulanceProviderByEmailDB, findAmbulanceProviderByNameDB, resetPasswordAmbulanceProviderDB } = require('../repositories/ambulanceproviders.repository'); 
+const { createAmbulanceProviderDB, findAmbulanceProviderByEmailDB, findAmbulanceProviderByNameDB, resetPasswordAmbulanceProviderDB, getAllAmbulanceProvidersDB } = require('../repositories/ambulanceproviders.repository'); 
 const SuccessResponse = require('../middleware/success.middleware')
 const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/error.middleware");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { get } = require('../routes/useraccounts.routes');
 
-const createAmbulanceProvider = async (email, phone_number, ambulance_provider_name, password, location, res) => {
+const createAmbulanceProvider = async (email, phone_number, ambulance_provider_name, password, location, kota_id, res) => {
     try{
-        if (!email || !phone_number || !ambulance_provider_name || !password || !location){
+        if (!email || !phone_number || !ambulance_provider_name || !password || !location || !kota_id){
             throw new FieldEmptyError("All fields are required");
         }
 
@@ -30,7 +31,7 @@ const createAmbulanceProvider = async (email, phone_number, ambulance_provider_n
         const hashedPassword = await bcrypt.hash(password, salt);
         
         // email, phone_number, ambulance_provider_name, hashedPassword, location
-        const created = await createAmbulanceProviderDB(email, phone_number, ambulance_provider_name, hashedPassword, location);
+        const created = await createAmbulanceProviderDB(email, phone_number, ambulance_provider_name, hashedPassword, location, kota_id);
         
         const success = new SuccessResponse("Hospital account created successfully", {
             "ambulance_provider_id": created.id,
@@ -78,7 +79,19 @@ const validateAmbulanceProvider = async (email, password, res) => {
     }
 }
 
+const getAllAmbulanceProviders = async (res, filterParams) => {
+    try {
+        const allHospitals = await getAllAmbulanceProvidersDB(filterParams);
+        const success = new SuccessResponse("All ambulance providers", allHospitals);
+        success.send200(res);
+    } catch (error) {
+        errorHandler(error, res);
+    }
+}
+
+
 module.exports = {
     createAmbulanceProvider,
-    validateAmbulanceProvider
+    validateAmbulanceProvider,
+    getAllAmbulanceProviders
 }

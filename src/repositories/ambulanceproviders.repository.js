@@ -1,13 +1,14 @@
 const models = require('../models');
 const ambulanceProviders = models.AmbulanceProviders;
 
-const createAmbulanceProviderDB = async (email, phone_number, ambulance_provider_name, hashedPassword, location) => {
+const createAmbulanceProviderDB = async (email, phone_number, ambulance_provider_name, hashedPassword, location, kota_id) => {
     return ambulanceProviders.create({
         email: email,
         phone_number: phone_number,
         ambulance_provider_name: ambulance_provider_name,
         password: hashedPassword,
-        location: location
+        location: location,
+        kota_id: kota_id
     });
 }
 
@@ -65,14 +66,42 @@ const resetPasswordAmbulanceProviderDB = async (email, newHashedPassword) => {
     }
 }
 
-const getAllAmbulanceProvidersDB = async () => {
-    try{
-        return await ambulanceProviders.findAll();
-    }
-    catch (error){
+const getAllAmbulanceProvidersDB = async (filterParams) => {
+    try {
+        // Build the query options based on filter parameters
+        const queryOptions = {
+            where: {},
+            include: [
+                {
+                    model: models.Kota,
+                    as: 'kota_ambulanceProviders',
+                    include: [
+                        {
+                            model: models.Provinsi,
+                            as: 'provinsi_kota'
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Add filter conditions
+        if (filterParams.kota_id) {
+            queryOptions.where['kota_id'] = filterParams.kota_id;
+        }
+
+        if (filterParams.provinsi_id) {
+            queryOptions.include[0].where = {
+                provinsi_id: filterParams.provinsi_id
+            };
+        }
+
+        return await ambulanceProviders.findAll(queryOptions);
+    } catch (error) {
         console.log(error);
     }
 }
+
 
 const getAllAmbulanceProvidersByKotaDB = async (kota_id) => {
     try{

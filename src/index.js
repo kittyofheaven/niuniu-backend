@@ -73,6 +73,12 @@ app.use(`/${prefix}/driveraccounts`, driverAccountsRoutes);
 const adminAccountsRoutes = require('./routes/adminaccounts.routes');
 app.use(`/${prefix}/niuniu/administrator`, adminAccountsRoutes);
 
+const kotaRoutes = require('./routes/kota.routes');
+const provinsiRoutes = require('./routes/provinsi.routes');
+app.use(`/${prefix}/wilayah`, provinsiRoutes);
+app.use(`/${prefix}/wilayah`, kotaRoutes);
+
+
 // FCM endpoint
 app.get(`/${prefix}/sendNotification`, async (req, res) => {
     const message = {

@@ -2,9 +2,9 @@ const { UnknownError, CustomError, FieldEmptyError, UserNotFoundError, errorHand
 const ambulanceProvidersServices = require('../services/ambulanceproviders.service');
 
 const createAmbulanceProvider = async (req, res) => {
-    const { email, phone_number, hospital_name, password, location } = req.body;
+    const { email, phone_number, ambulance_provider_name, password, location, kota_id } = req.body;
     try{
-        await ambulanceProvidersServices.createAmbulanceProvider(email, phone_number, hospital_name, password, location, res);
+        await ambulanceProvidersServices.createAmbulanceProvider(email, phone_number, ambulance_provider_name, password, location, kota_id, res);
     } catch (error){
         errorHandler(error, res);
     }
@@ -22,7 +22,17 @@ const validateAmbulanceProvider = async (req, res) => {
     }
 }
 
+const getAllAmbulanceProviders = async (req, res) => {
+    try {
+        const filterParams = req.query; // Extract filter parameters from request query
+        await ambulanceProvidersServices.getAllAmbulanceProviders(res, filterParams);
+    } catch (error) {
+        errorHandler(error, res);
+    }
+}
+
 module.exports = {
     createAmbulanceProvider,
-    validateAmbulanceProvider
+    validateAmbulanceProvider,
+    getAllAmbulanceProviders
 }
