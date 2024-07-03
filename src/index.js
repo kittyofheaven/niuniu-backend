@@ -26,7 +26,8 @@ admin.initializeApp({
 const { sendNotification } = require('../src/helpers/sendnotification.helper');
 
 app.use(cors({
-    origin: "*"
+    origin: "*",
+    methods: 'GET,POST,PUT,DELETE,OPTIONS'
 }));
 
 //* Enabling cors for all request by using cors middleware
