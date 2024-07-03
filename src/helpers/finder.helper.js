@@ -246,6 +246,7 @@ const findDriver = async (user_location, emergency_event_id) => {
                                 body: JSON.stringify({
                                     emergency_event_id: emergency_event_id,
                                     user_name: user_name,
+                                    user_phone_number: emergencyEvent.user_emergencyEvents.phone_number,
                                     user_location: user_location
                                 })
                             },
