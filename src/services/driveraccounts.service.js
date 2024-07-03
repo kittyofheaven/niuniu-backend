@@ -1,4 +1,4 @@
-    const { createDriverAccountDB, findDriverAccountByEmailDB, findDriverAccountByHospitalDB, resetPasswordDriverAccountDB, insertFcmtokenDB, deleteFcmTokenDB} = require('../repositories/driveraccounts.repository');
+    const { createDriverAccountDB, findDriverAccountByEmailDB, findDriverAccountByHospitalDB, resetPasswordDriverAccountDB, insertFcmtokenDB, deleteFcmTokenDB, getAllDriverAccountsDB} = require('../repositories/driveraccounts.repository');
 const SuccessResponse = require('../middleware/success.middleware')
 const { errorHandler, FieldEmptyError, CustomError } = require("../middleware/error.middleware");
 const bcrypt = require('bcrypt');
@@ -99,8 +99,20 @@ const logoutDriverAccount = async (driver_id, res) => {
 
 }
 
+const getAllDriverAccounts = async (filterParams, res) => {
+    try{
+        const driverAccounts = await getAllDriverAccountsDB(filterParams);
+        console.log(driverAccounts);
+        const success = new SuccessResponse("Driver accounts fetched successfully", driverAccounts);
+        success.send200(res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
 module.exports = {
     createDriverAccount,
     validateDriverAccount,
-    logoutDriverAccount
+    logoutDriverAccount,
+    getAllDriverAccounts
 }

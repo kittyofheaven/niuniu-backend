@@ -31,8 +31,18 @@ const logoutDriverAccount = async (req, res) => {
     }
 }
 
+const getAllDriverAccounts = async (req, res) => {
+    try{
+        const filterParams = req.query;
+        await driverAccountsServices.getAllDriverAccounts(filterParams, res);
+    } catch (error){
+        errorHandler(error, res);
+    }
+}
+
 module.exports = {
     createDriverAccount,
     validateDriverAccount,
-    logoutDriverAccount
+    logoutDriverAccount,
+    getAllDriverAccounts
 }

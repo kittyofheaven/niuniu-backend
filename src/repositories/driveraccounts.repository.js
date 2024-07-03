@@ -1,4 +1,5 @@
 const models = require('../models');
+const { get } = require('../routes/provinsi.routes');
 const driverAccounts = models.DriverAccounts;
 
 
@@ -138,6 +139,55 @@ const updateIsOccupiedDriverDB = async (id, is_occupied) => {
     }
 }
 
+const getAllDriverAccountsDB = async (filterParams) => {
+    try {
+        // Build the query options based on filter parameters
+        const queryOptions = {
+            where: {},
+            include: [
+                {
+                    model: models.AmbulanceProviders,
+                    as: 'ambulance_provider_driverAccounts',
+                    include: [
+                        {
+                            model: models.Kota,
+                            as: 'kota_ambulanceProviders',
+                            include: [
+                                {
+                                    model: models.Provinsi,
+                                    as: 'provinsi_kota'
+                                }
+                            ]
+                        }
+                    ],
+                    attributes: { exclude: ['password'] }
+                }
+            ],
+            attributes: { exclude: ['password'] }
+        };
+
+        // Add filter conditions
+        if (filterParams.ambulance_provider_id) {
+            queryOptions.where['ambulance_provider_id'] = filterParams.ambulance_provider_id;
+        }
+
+        if (filterParams.kota_id) {
+            queryOptions.include[0].where = queryOptions.include[0].where || {};
+            queryOptions.include[0].where['kota_id'] = filterParams.kota_id;
+        }
+
+        if (filterParams.provinsi_id) {
+            queryOptions.include[0].include[0].where = queryOptions.include[0].include[0].where || {};
+            queryOptions.include[0].include[0].where['provinsi_id'] = filterParams.provinsi_id;
+        }
+
+        return await models.DriverAccounts.findAll(queryOptions);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
 module.exports = {
     createDriverAccountDB,
     findDriverAccountByEmailDB,
@@ -147,5 +197,6 @@ module.exports = {
     insertFcmtokenDB,
     deleteFcmTokenDB,
     FindAllDriverByAmbulanceProviderDB,
-    updateIsOccupiedDriverDB
+    updateIsOccupiedDriverDB,
+    getAllDriverAccountsDB
 }

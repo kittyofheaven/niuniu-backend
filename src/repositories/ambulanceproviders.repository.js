@@ -82,7 +82,10 @@ const getAllAmbulanceProvidersDB = async (filterParams) => {
                         }
                     ]
                 }
-            ]
+            ],
+            attributes: {
+                exclude: ['password']
+            }
         };
 
         // Add filter conditions
