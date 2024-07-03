@@ -119,6 +119,23 @@ const updateRatingEmergencyEvent = async (req, res) => {
     }
 }
 
+const getAllEmergencyEvents = async (req, res) => {
+    try {
+        const filterParams = req.query;
+        const page = parseInt(req.query.page, 10) || 1; // Default to page 1 if not provided
+        const limit = parseInt(req.query.limit, 10) || 10; // Default to 10 items per page if not provided
+        
+        // Add page and limit to filterParams
+        // filterParams.page = page;
+        // filterParams.limit = limit;
+
+        await emergencyEventsServices.getAllEmergencyEvents(page, limit, filterParams, res);
+    } catch (error) {
+        errorHandler(error, res);
+    }
+};
+
+
 
 module.exports = {
     createEmergencyEvent,
@@ -131,5 +148,6 @@ module.exports = {
     updateEmergencyEventDriverId,
     updateDoneEmergencyEvent,
     updateEmergencyTypeEmergencyEvent,
-    updateRatingEmergencyEvent
+    updateRatingEmergencyEvent,
+    getAllEmergencyEvents
 }

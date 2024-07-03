@@ -1,6 +1,7 @@
 const models = require('../models');
 const emergencyEvents = models.EmergencyEvents;
 const { UserAccounts, DriverAccounts, AmbulanceProviders, Hospitals } = require('../models');
+const { Op } = require('sequelize');
 // const { EmergencyEvents, UserAccounts, DriverAccounts, AmbulanceProviders, Hospitals } = require('./models');
 
 // user_id: DataTypes.INTEGER,
@@ -300,6 +301,98 @@ const updateRatingEmergencyEventDB = async (id, rating) => {
     }
 }
 
+const getAllEmergencyEventDB = async (page, limit, filterParams) => {
+    try {
+        const queryOptions = {
+            offset: (page - 1) * limit,
+            limit: limit,
+            include: [
+                { model: UserAccounts, as: 'user_emergencyEvents', attributes: { exclude: ['password'] } },
+                { model: DriverAccounts, as: 'driver_emergencyEvents', attributes: { exclude: ['password'] } },
+                { 
+                    model: AmbulanceProviders, 
+                    as: 'ambulance_provider_emergencyEvents', 
+                    include: [
+                        {
+                            model: models.Kota,
+                            as: 'kota_ambulanceProviders',
+                            include: [
+                                {
+                                    model: models.Provinsi,
+                                    as: 'provinsi_kota'
+                                }
+                            ]
+                        }
+                    ],
+                    attributes: { exclude: ['password'] } 
+                },
+                { model: Hospitals, as: 'hospital_emergencyEvents' }
+            ],
+            order: [['createdAt', 'DESC']],
+            where: {}
+        };
+
+        if (filterParams.provinsi_id) {
+            queryOptions.include[2].include[0].where = { provinsi_id: filterParams.provinsi_id };
+        }
+
+        if (filterParams.kota_id) {
+            queryOptions.include[2].where = { kota_id: filterParams.kota_id };
+        }
+
+        if (filterParams.ambulance_provider_id) {
+            queryOptions.where.ambulance_provider_id = filterParams.ambulance_provider_id;
+        }
+
+        if (filterParams.hospital_id) {
+            queryOptions.where.hospital_id = filterParams.hospital_id;
+        }
+
+        if (filterParams.is_done) {
+            queryOptions.where.is_done = filterParams.is_done;
+        }
+
+        if (filterParams.is_canceled) {
+            queryOptions.where.is_canceled = filterParams.is_canceled;
+        }
+
+        if (filterParams.emergency_type) {
+            queryOptions.where.emergency_type = filterParams.emergency_type;
+        }
+
+        if (filterParams.rating) {
+            queryOptions.where.rating = filterParams.rating;
+        }
+
+        if (filterParams.driver_id) {
+            queryOptions.where.driver_id = filterParams.driver_id;
+        }
+
+        // Apply createdAt date range filter
+        if (filterParams.start_date || filterParams.end_date) {
+            queryOptions.where.createdAt = {};
+            if (filterParams.start_date) {
+                queryOptions.where.createdAt[Op.gte] = new Date(filterParams.start_date);
+            }
+            if (filterParams.end_date) {
+                // Set end_date to the end of the day
+                const endDate = new Date(filterParams.end_date);
+                endDate.setHours(23, 59, 59, 999);
+                queryOptions.where.createdAt[Op.lte] = endDate;
+            }
+        }
+
+        return await emergencyEvents.findAll(queryOptions);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+
+
+
+
 module.exports = {
     createEmergencyEventDB,
     findEmergencyEventByIdDB,
@@ -317,5 +410,6 @@ module.exports = {
     updateDoneEmergencyEventDB,
     updateCancelEmergencyEventDB,
     updateEmergencyTypeEmergencyEventDB,
-    updateRatingEmergencyEventDB
+    updateRatingEmergencyEventDB,
+    getAllEmergencyEventDB
 }

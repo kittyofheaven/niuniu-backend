@@ -11,7 +11,8 @@ const {
     updateDoneEmergencyEventDB,
     updateEmergencyTypeEmergencyEventDB,
     updateHospitalIdEmergencyEventDB,
-    updateRatingEmergencyEventDB
+    updateRatingEmergencyEventDB,
+    getAllEmergencyEventDB
 } = require('../repositories/emergencyevents.repository');
 const { 
     findAmbulanceProviderByIdDB, 
@@ -44,6 +45,7 @@ const {
 } = require("../middleware/error.middleware");
 const { getIo } = require('../sockets');
 const { sendNotification } = require('../helpers/sendnotification.helper');
+const { get } = require('../routes/provinsi.routes');
 
 const createEmergencyEvent = async (user_id, user_location, number_of_patient, title, descriptions, res) => {
 
@@ -440,7 +442,17 @@ const updateRatingEmergencyEvent = async (user_id, emergency_event_id, rating, r
     catch (error){
         throw error;
     }
+}
 
+const getAllEmergencyEvents = async (page, limit, filterParams, res) => {
+    try{
+        const allEmergencyEvents = await getAllEmergencyEventDB(page, limit, filterParams);
+
+        const success = new SuccessResponse("All emergency events", allEmergencyEvents);
+        success.send200(res);
+    } catch (error){
+        throw error;
+    }
 }
 
 module.exports = {
@@ -454,5 +466,6 @@ module.exports = {
     updateDoneEmergencyEvent,
     updateEmergencyEventDriverId,
     updateEmergencyTypeEmergencyEvent,
-    updateRatingEmergencyEvent
+    updateRatingEmergencyEvent,
+    getAllEmergencyEvents
 }
