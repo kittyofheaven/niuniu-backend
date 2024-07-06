@@ -337,6 +337,7 @@ const findDriver = async (user_location, emergency_event_id) => {
               console.log("Successfully sent message:", result.response);
             } else {
               console.error("Error sending message:", result.error);
+              throw new Error("Error sending message to driver");
             }
           } catch (error) {
             console.error("Unexpected error sending message:", error);
@@ -391,8 +392,12 @@ const findDriver = async (user_location, emergency_event_id) => {
     console.log(message);
 
     try {
-      await sendNotification(message);
-      console.log("Error notification sent to user.");
+      const sent = await sendNotification(message);
+      if (sent.success) {
+        console.log("Error notification sent to user.");
+      } else {
+        throw new Error("Error sending notification to user");
+      }
     } catch (notificationError) {
       console.error("Error sending notification to user:", notificationError);
     }
