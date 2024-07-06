@@ -243,12 +243,10 @@ const findDriver = async (user_location, emergency_event_id) => {
   const interval = 1000; // 1 second
 
   const emergencyEvent = await findEmergencyEventByIdDB(emergency_event_id);
-  let user_name =
+  const user_name =
     emergencyEvent.user_emergencyEvents.first_name +
     " " +
     emergencyEvent.user_emergencyEvents.last_name;
-  // console.log('User name:', user_name);
-  // console.log(emergencyEvent.user_emergencyEvents.fcm_token);
 
   try {
     while (true) {
@@ -261,12 +259,8 @@ const findDriver = async (user_location, emergency_event_id) => {
         );
         nearestAmbulanceProvider = nearestAmbulanceProviders[tries];
         if (!nearestAmbulanceProvider) {
-          throw new Error("None of ambulance providers drivers accepted.");
+          throw new Error("None of the ambulance providers accepted.");
         }
-        console.log(
-          "Nearest ambulance provider:",
-          nearestAmbulanceProvider.ambulance_provider_name
-        );
 
         if (
           distanceBetweenTwoPointsInKm(
@@ -280,17 +274,17 @@ const findDriver = async (user_location, emergency_event_id) => {
               body: "No nearby ambulance providers within 10km.",
             },
             data: {
+              status: "404",
               title: "Emergency Event",
               body: "No nearby ambulance providers within 10km.",
             },
             token: emergencyEvent.user_emergencyEvents.fcm_token,
           };
-          console.log("No nearby ambulance providers within 10km.");
           await sendNotification(message);
           throw new Error("No nearby ambulance providers within 10km.");
         }
       } catch (error) {
-        // console.error('Error finding nearest ambulance providers bro:', error);
+        console.error("Error finding nearest ambulance providers:", error);
         throw error; // Exit the loop and function if there are no nearby providers
       }
 
@@ -300,54 +294,45 @@ const findDriver = async (user_location, emergency_event_id) => {
           nearestAmbulanceProvider.id
         );
 
+        if (allDrivers.length === 0) {
+          throw new Error(
+            `No drivers found for the ambulance provider (ambulance_provider_id: ${nearestAmbulanceProvider.id})`
+          );
+        }
+
         for (const driver of allDrivers) {
-          try {
-            // Send notification to driver
+          if (driver.is_occupied) {
+            console.log(`Driver ${driver.id} is occupied, skipping...`);
+            continue;
+          }
 
-            if (driver.is_occupied) {
-              console.log(`Driver ${driver.id} is occupied, skipping...`);
-              continue;
-            }
+          const message = {
+            notification: {
+              title: "Emergency Event",
+              body: "Someone needs an ambulance, please accept the emergency event",
+            },
+            data: {
+              status: "200",
+              title: "Emergency Event",
+              body: JSON.stringify({
+                emergency_event_id: emergency_event_id,
+                user_name: user_name,
+                user_phone_number:
+                  emergencyEvent.user_emergencyEvents.phone_number,
+                user_location: user_location,
+              }),
+            },
+            token: driver.fcm_token,
+          };
 
-            const message = {
-              notification: {
-                title: "Emergency Event",
-                body: "Someone needs an ambulance, please accept the emergency event",
-              },
-              data: {
-                title: "Emergency Event",
-                body: JSON.stringify({
-                  status: 200,
-                  emergency_event_id: emergency_event_id,
-                  user_name: user_name,
-                  user_phone_number:
-                    emergencyEvent.user_emergencyEvents.phone_number,
-                  user_location: user_location,
-                }),
-              },
-              token: driver.fcm_token,
-            };
+          const result = await sendNotification(message);
 
-            console.log(message);
-
-            const result = await sendNotification(message);
-            console.log("this is a result ", result);
-
-            if (result.success) {
-              console.log("Successfully sent message:", result.response);
-            } else {
-              console.error("Error sending message:", result.error);
-              throw new Error("Error sending message to driver");
-            }
-          } catch (error) {
-            console.error("Unexpected error sending message:", error);
+          if (!result.success) {
+            console.error("Error sending message to driver:", result.error);
+            throw new Error("Error sending message to driver");
           }
         }
 
-        // Polling for driver acceptance
-        if (allDrivers.length === 0) {
-          throw new Error("No drivers found for the ambulance provider");
-        }
         const driverAccepted = await pollForDriverAcceptance(
           emergency_event_id,
           timeout,
@@ -376,9 +361,9 @@ const findDriver = async (user_location, emergency_event_id) => {
         body: `No drivers found for the emergency event`,
       },
       data: {
+        status: "404",
         title: "Emergency Event",
         body: JSON.stringify({
-          status: 404,
           emergency_event_id: emergency_event_id,
           user_name: user_name,
           user_location: user_location,
@@ -393,18 +378,25 @@ const findDriver = async (user_location, emergency_event_id) => {
 
     try {
       const sent = await sendNotification(message);
-      if (sent.success) {
-        console.log("Error notification sent to user.");
-      } else {
+      if (!sent.success) {
+        console.error("Error sending notification to user:", sent.error);
         throw new Error("Error sending notification to user");
       }
     } catch (notificationError) {
       console.error("Error sending notification to user:", notificationError);
     }
-    // emergencyEvent is_cancelled jadiin true;
-    updateCancelEmergencyEventDB(emergency_event_id);
+
+    // Update the emergency event as cancelled
+    try {
+      await updateCancelEmergencyEventDB(emergency_event_id);
+    } catch (dbError) {
+      console.error(
+        "Error updating the emergency event as cancelled:",
+        dbError
+      );
+    }
+
     console.error("Error finding nearest driver:", error);
-    // throw error; // Final error handling if no drivers are found after all attempts
   }
 };
 
