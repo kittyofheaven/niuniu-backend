@@ -1,0 +1,12 @@
+version: "2"
+sql:
+  - engine: "mysql"
+    queries: "databases/query.sql"
+    schema: "databases/schema.sql"
+    gen:
+      go:
+        package: "db"
+        out: "src/db"
+        overrides:
+          - db_type: "geometry"
+            go_type: "github.com/cridenour/go-postgis.Point"
