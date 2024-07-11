@@ -32,6 +32,7 @@ const sendNotification = async (message) => {
           title: message.title,
           body: message.body,
         },
+        data: message.data ? message.data : {},
       },
     };
 
