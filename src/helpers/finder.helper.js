@@ -329,7 +329,8 @@ const findDriver = async (user_location, emergency_event_id) => {
 
           if (!result.success) {
             console.error("Error sending message to driver:", result.error);
-            throw new Error("Error sending message to driver");
+            continue;
+            // throw new Error("Error sending message to driver");
           }
         }
 
