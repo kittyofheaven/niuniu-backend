@@ -306,6 +306,13 @@ const findDriver = async (user_location, emergency_event_id) => {
             continue;
           }
 
+          if (driver.fcm_token === null) {
+            console.log(
+              `Driver ${driver.id} does not have an FCM token, skipping...`
+            );
+            continue;
+          }
+
           const message = {
             notification: {
               title: "Emergency Event",
