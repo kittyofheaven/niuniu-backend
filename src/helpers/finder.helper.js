@@ -327,6 +327,8 @@ const findDriver = async (user_location, emergency_event_id) => {
                 user_phone_number:
                   emergencyEvent.user_emergencyEvents.phone_number,
                 user_location: user_location,
+                number_of_patient: emergencyEvent.number_of_patient,
+                description: emergencyEvent.descriptions,
               }),
             },
             token: driver.fcm_token,
