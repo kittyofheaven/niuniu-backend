@@ -29,8 +29,8 @@ const sendNotification = async (message) => {
       message: {
         token: message.token,
         notification: {
-          title: message.title,
-          body: message.body,
+          title: message.notification.title,
+          body: message.notification.body,
         },
         data: message.data ? message.data : {},
       },
