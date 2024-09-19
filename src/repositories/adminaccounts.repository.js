@@ -17,7 +17,7 @@ const findAdminAccountByUsernameDB = async (username) => {
         });
     }
     catch (error){
-        console.log(error);
+        throw error;
     }
 }
 

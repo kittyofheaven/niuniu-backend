@@ -81,9 +81,7 @@ const createEmergencyEvent = async (
       is_done
     );
     const useraccount = await findUserAccountByIdDB(user_id);
-    // console.log(useraccount);
     let name = useraccount.first_name + " " + useraccount.last_name;
-    // console.log(name);
 
     if (created.title == null) {
       created.title = "No provided title";
@@ -294,7 +292,6 @@ const updateEmergencyEventDriverId = async (id, driver_id, res) => {
     }
 
     const emergencyEvent = await findEmergencyEventByIdDB(id);
-    // console.log(emergencyEvent);
 
     if (emergencyEvent == null) {
       throw new CustomError("Emergency event not found", 404);
@@ -311,7 +308,6 @@ const updateEmergencyEventDriverId = async (id, driver_id, res) => {
     updateIsOccupiedDriverDB(driver_id, 1);
     const driver = await findDriverAccountByIdDB(driver_id);
     let ambulance_provider_id = driver.ambulance_provider_id;
-    // console.log(ambulance_provider_id);
 
     const updated = await updateEmergencyEventDriverIdDB(
       id,
