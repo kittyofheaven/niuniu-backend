@@ -176,112 +176,112 @@ const initializeSocket = (server) => {
         // HOSPITAL SOCKET EVENT END
 
         // TRACKING
-        socket.on("tracking", async (data)=> {
-            // console.log(`Tracking event received from ${socket.id} with ${user_id} id and ${role}:`, data);
+        socket.on("tracking", async (data) => {
+          // {
+          //     ext auth token ...
+          //     emergency_event_id: 1,
+          //     driver_location: {
+          //          "type": "Point",
+          //          "coordinates": [
+          //              112.79492800618364,
+          //              -7.282360773173656
+          //         ]
+          //      }
+          // }
 
-            // {
-            //     ext auth token ...
-            //     emergency_event_id: 1,
-            //     driver_location: {
-            //          "type": "Point",
-            //          "coordinates": [
-            //              112.79492800618364,
-            //              -7.282360773173656
-            //         ]
-            //      }
-            // }
+          // {
+          //     ext user auth token ...
+          //     emergency_event_id: 1,
+          //     user_location: {
+          //          "type": "Point",
+          //          "coordinates": [
+          //              112.79492800618364,
+          //              -7.282360773173656
+          //         ]
+          //      }
+          // }
 
-            // {
-            //     ext user auth token ...
-            //     emergency_event_id: 1,
-            //     user_location: {
-            //          "type": "Point",
-            //          "coordinates": [
-            //              112.79492800618364,
-            //              -7.282360773173656
-            //         ]
-            //      }
-            // }
+          try {
+            const user_id = socket.user.id;
+            const role = socket.handshake.auth.role;
 
-            try{
-
-                const user_id = socket.user.id;
-                const role = socket.handshake.auth.role;
-
-                // console.log(data.emergency_event_id);
-
-                const emergencyEventId = data.emergency_event_id;
-                if (emergencyEventId == undefined) {
-                    console.log(`emergency_event_id not provided by ${role}${user_id}`);
-                    io.to(`${role}${user_id}`).emit('emergency', {
-                        status: 'error',
-                        message: 'emergency_event_id not provided'
-                    });
-                    return;
-                }
-
-                const emergencyEvent = await findEmergencyEventByIdDB(emergencyEventId);
-                if (!emergencyEvent) {
-                    console.log(`Emergency event not found with ID ${emergencyEventId}`);
-                    io.to(`${role}${user_id}`).emit('emergency', {
-                        status: 'error',
-                        message: 'Emergency event not found'
-                    });
-                    return;
-                }
-
-                if(role == "driver"){
-                    const driver_location = data.driver_location;
-                    console.log(driver_location);
-
-                    const driverAccount = await findDriverAccountByIdDB(user_id);
-                    let driverName = driverAccount.first_name + " " + driverAccount.last_name;
-
-                    io.to(`user${emergencyEvent.user_id}`).emit('tracking', {
-                        status: 'success',
-                        emergency_event_id: emergencyEventId,
-                        driver_id: user_id,
-                        driver_name: driverName,
-                        location: driver_location,
-                        message: 'Driver location updated successfully'
-                    });
-                    // io.to(`user${emergencyEvent.hospital_id}`).emit('tracking', {
-                    //     status: 'success',
-                    //     emergency_event_id: emergencyEventId,
-                    //     driver_id: user_id,
-                    //     location: driver_location,
-                    //     message: 'Driver location updated successfully'
-                    // });
-                }
-
-                if(role == "user"){
-                    const user_location = data.user_location;
-
-                    io.to(`driver${emergencyEvent.driver_id}`).emit('tracking', {
-                        status: 'success',
-                        emergency_event_id: emergencyEventId,
-                        user_id: user_id,
-                        location: user_location,
-                        message: 'User location updated successfully'
-                    });
-                    // io.to(`hospital${emergencyEvent.hospital_id}`).emit('tracking', {
-                    //     status: 'success',
-                    //     emergency_event_id: emergencyEventId,
-                    //     user_id: user_id,
-                    //     location: user_location,
-                    //     message: 'User location updated successfully'
-                    // });
-                }
-
+            const emergencyEventId = data.emergency_event_id;
+            if (emergencyEventId == undefined) {
+              console.log(
+                `emergency_event_id not provided by ${role}${user_id}`
+              );
+              io.to(`${role}${user_id}`).emit("emergency", {
+                status: "error",
+                message: "emergency_event_id not provided",
+              });
+              return;
             }
-            catch(error){
-                console.error('Error handling tracking event:', error);
-                io.to(`${role}${user_id}`).emit('tracking', {
-                    status: 'error',
-                    message: 'An error occurred while processing the emergency event'
-                });
+
+            const emergencyEvent = await findEmergencyEventByIdDB(
+              emergencyEventId
+            );
+            if (!emergencyEvent) {
+              console.log(
+                `Emergency event not found with ID ${emergencyEventId}`
+              );
+              io.to(`${role}${user_id}`).emit("emergency", {
+                status: "error",
+                message: "Emergency event not found",
+              });
+              return;
             }
-        })
+
+            if (role == "driver") {
+              const driver_location = data.driver_location;
+              console.log(driver_location);
+
+              const driverAccount = await findDriverAccountByIdDB(user_id);
+              let driverName =
+                driverAccount.first_name + " " + driverAccount.last_name;
+
+              io.to(`user${emergencyEvent.user_id}`).emit("tracking", {
+                status: "success",
+                emergency_event_id: emergencyEventId,
+                driver_id: user_id,
+                driver_name: driverName,
+                location: driver_location,
+                message: "Driver location updated successfully",
+              });
+              // io.to(`user${emergencyEvent.hospital_id}`).emit('tracking', {
+              //     status: 'success',
+              //     emergency_event_id: emergencyEventId,
+              //     driver_id: user_id,
+              //     location: driver_location,
+              //     message: 'Driver location updated successfully'
+              // });
+            }
+
+            if (role == "user") {
+              const user_location = data.user_location;
+
+              io.to(`driver${emergencyEvent.driver_id}`).emit("tracking", {
+                status: "success",
+                emergency_event_id: emergencyEventId,
+                user_id: user_id,
+                location: user_location,
+                message: "User location updated successfully",
+              });
+              // io.to(`hospital${emergencyEvent.hospital_id}`).emit('tracking', {
+              //     status: 'success',
+              //     emergency_event_id: emergencyEventId,
+              //     user_id: user_id,
+              //     location: user_location,
+              //     message: 'User location updated successfully'
+              // });
+            }
+          } catch (error) {
+            console.error("Error handling tracking event:", error);
+            io.to(`${role}${user_id}`).emit("tracking", {
+              status: "error",
+              message: "An error occurred while processing the emergency event",
+            });
+          }
+        });
         // TRACKING END
 
         // SOCKET STATUS

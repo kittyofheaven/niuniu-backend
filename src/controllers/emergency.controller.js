@@ -6,23 +6,25 @@ const SuccessResponse = require('../middleware/success.middleware')
 
 const postEmergencyController = async (req, res) => {
     try {
-        // console.log(req.userAccount.first_name);
-        const { name, phone, location, emergencyType } = req.body;
+      const { name, phone, location, emergencyType } = req.body;
 
-        if (!name || !phone || !location || !emergencyType) {
-            throw new FieldEmptyError("All fields are required")
-        }
+      if (!name || !phone || !location || !emergencyType) {
+        throw new FieldEmptyError("All fields are required");
+      }
 
-        const data = {
-            name,
-            phone,
-            location,
-            emergencyType
-        }
-        const response = new SuccessResponse('Emergency request sent successfully', data);
-        response.send200(res);
+      const data = {
+        name,
+        phone,
+        location,
+        emergencyType,
+      };
+      const response = new SuccessResponse(
+        "Emergency request sent successfully",
+        data
+      );
+      response.send200(res);
     } catch (error) {
-        errorHandler(error, res);
+      errorHandler(error, res);
     }
 }
 

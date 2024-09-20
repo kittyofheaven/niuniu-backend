@@ -20,7 +20,6 @@ const getAccessToken = async () => {
 const sendNotification = async (message) => {
   try {
     const accessToken = await getAccessToken();
-    // console.log("accessToken", accessToken);
     console.log("SENDING MESSAGE", message);
 
     const url = `https://fcm.googleapis.com/v1/projects/${process.env.FIREBASE_PROJECT_ID}/messages:send`;

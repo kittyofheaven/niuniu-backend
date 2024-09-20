@@ -384,8 +384,6 @@ const findDriver = async (user_location, emergency_event_id) => {
       token: emergencyEvent.user_emergencyEvents.fcm_token,
     };
 
-    console.log(message);
-
     try {
       const sent = await sendNotification(message);
       if (!sent.success) {

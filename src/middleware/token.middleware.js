@@ -9,29 +9,31 @@ const adminAccounts = models.AdminAccounts;
 const verifyUserToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
     if (!token)
-        errorHandler(new CustomError('User Token Not Provided', 400), res);
+      errorHandler(new CustomError("User Token Not Provided", 400), res);
     else
-        // console.log(token)
-        jwt.verify(token, process.env.SECRET_JWT_TOKEN_USER, async (err, decoded) => {
-            if (err) {
-                return errorHandler(new UnauthorizedError(err.message), res)
+      jwt.verify(
+        token,
+        process.env.SECRET_JWT_TOKEN_USER,
+        async (err, decoded) => {
+          if (err) {
+            return errorHandler(new UnauthorizedError(err.message), res);
+          }
+          try {
+            const account = await userAccounts.findOne({
+              where: {
+                id: decoded.id,
+              },
+            });
+            if (!account) {
+              return errorHandler(new UserNotFoundError(), res);
             }
-            try {
-                // console.log(decoded.id)
-                const account = await userAccounts.findOne({
-                    where: {
-                        id: decoded.id
-                    }
-                })
-                if (!account) {
-                    return errorHandler(new UserNotFoundError(), res)
-                }
-                req.userAccount = account
-                next()
-            } catch (err) {
-                return errorHandler(new UnknownError(err.message), res)
-            }
-        })
+            req.userAccount = account;
+            next();
+          } catch (err) {
+            return errorHandler(new UnknownError(err.message), res);
+          }
+        }
+      );
 }
 // ini buat klo mau verify token di query
 const verifyUserTokenQuery = (req, res, next) => {
